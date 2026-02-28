@@ -32,11 +32,11 @@
 | S-005 | HOLE | Implement phase-1 runtime loop + WS delta flow | 68 | 14 | done | codex-heartbeat |
 | S-006 | HOLE | Implement phase-2 world delta persistence and replay baseline | 66 | 14 | done | codex-heartbeat |
 | S-007 | HOLE | Implement phase-3 multi-world routing and world-scoped WS channels | 64 | 14 | done | codex-heartbeat |
-| S-008 | HOLE | Establish phase-4 build/test quality gate for runtime-gateway-world contracts | 62 | 14 | open | unassigned |
+| S-008 | HOLE | Establish phase-4 build/test quality gate for runtime-gateway-world contracts | 62 | 14 | done | codex-worker-s008 |
 
 ## Hotspot Areas
 
-- `S-008` (`HOLE`, w=62, open): quality gate is pending (single command path for workspace + `S-005` + `S-006` + `S-007` verification, with pass/fail contract).
+(none — `S-008` quality gate command is implemented and documented)
 
 ## Notes for AI
 
@@ -56,7 +56,7 @@
 ## Known Limitations
 
 - Phase-0 scaffold and phase-1/phase-2/phase-3 baselines are implemented; `S-007` is done and verified.
-- Unified build/test quality gate is not established yet; tracked by `S-008`.
+- Local quality gate exists as `pnpm run verify:gate`; CI integration of this gate is not established yet.
 - `termite-db-export.sh` currently exports only schema-mapped fields; extra narrative YAML keys can be dropped if not preserved in DB/docs.
 
 ## Immune Log

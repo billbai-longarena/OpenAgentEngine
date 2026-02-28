@@ -33,12 +33,24 @@ node scripts/verify-s006-replay.mjs
 node scripts/verify-s007-routing.mjs
 ```
 
-5. Start local infra baseline (PostgreSQL + Redis + NATS):
+5. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 checks):
+```bash
+pnpm run verify:gate
+```
+
+Pass criteria:
+- `workspace-baseline` prints `Workspace verification passed.`
+- `phase-1-ws-flow` prints `S-005 flow verified...`
+- `phase-2-replay` prints `S-006 replay verified...`
+- `phase-3-routing` prints `S-007 routing verified...`
+- command exits `0` and ends with `Quality gate passed.`
+
+6. Start local infra baseline (PostgreSQL + Redis + NATS):
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
-6. Optional workspace commands (after installing deps):
+7. Optional workspace commands (after installing deps):
 ```bash
 pnpm install
 pnpm run lint

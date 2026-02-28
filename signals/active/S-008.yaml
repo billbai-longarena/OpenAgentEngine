@@ -1,14 +1,14 @@
 id: S-008
 type: HOLE
 title: "Establish phase-4 build/test quality gate for runtime-gateway-world contracts"
-status: open
+status: done
 weight: 62
 ttl_days: 14
 created: 2026-03-01
 last_touched: 2026-03-01
-owner: unassigned
+owner: codex-worker-s008
 module: "project-root"
 tags: [phase-4,quality,ci,verification]
-next: "Add root quality gate command chaining workspace + s005 + s006 + s007 verification with documented pass criteria"
-touch_count: 0
+next: "Use pnpm run verify:gate as default local contract check; wire the same gate into CI when infra automation is ready"
+touch_count: 1
 source: emergent

@@ -12,7 +12,8 @@
     "verify:workspace": "node scripts/verify-workspace.mjs",
     "verify:s005": "node scripts/verify-s005-flow.mjs",
     "verify:s006": "node scripts/verify-s006-replay.mjs",
-    "verify:s007": "node scripts/verify-s007-routing.mjs"
+    "verify:s007": "node scripts/verify-s007-routing.mjs",
+    "verify:gate": "node scripts/verify-quality-gate.mjs"
   },
   "devDependencies": {
     "turbo": "^2.5.4"
