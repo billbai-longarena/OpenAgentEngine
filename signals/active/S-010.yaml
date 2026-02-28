@@ -1,0 +1,14 @@
+id: S-010
+type: HOLE
+title: "Implement AI Presence continuous world-signal subscription baseline"
+status: open
+weight: 58
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: unassigned
+module: "apps/ai-presence"
+tags: [phase-6,ai-presence,stream,runtime]
+next: "Wire ai-presence to consume world.delta stream continuously and emit role-state updates with safe fallback when stream is unavailable"
+touch_count: 0
+source: emergent
