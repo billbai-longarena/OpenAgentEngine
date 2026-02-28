@@ -36,6 +36,11 @@ const steps = [
     name: 'phase-8-moment-fork',
     command: ['node', 'scripts/verify-s013-moment-fork.mjs'],
     successMarker: 'S-013 moment/fork verified'
+  },
+  {
+    name: 'phase-9-governance-runbook',
+    command: ['node', 'scripts/verify-s014-governance-runbook.mjs'],
+    successMarker: 'S-014 governance runbook verified'
   }
 ];
 

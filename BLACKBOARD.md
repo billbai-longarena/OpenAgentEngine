@@ -38,11 +38,12 @@
 | S-011 | HOLE | Preserve narrative YAML fields during DB export | 56 | 14 | done | codex-worker-s011 |
 | S-012 | HOLE | Extend quality gate with S-010 and S-011 verification | 54 | 14 | done | codex-worker-s012 |
 | S-013 | HOLE | Implement moment creation and world-fork lineage baseline | 52 | 14 | done | codex-worker-s013 |
-| S-014 | HOLE | Define branch protection required-check policy and setup runbook | 50 | 14 | open | unassigned |
+| S-014 | HOLE | Define branch protection required-check policy and setup runbook | 50 | 14 | done | codex-heartbeat |
+| S-015 | HOLE | Automate branch-protection drift audit against GitHub API | 50 | 14 | open | unassigned |
 
 ## Hotspot Areas
 
-- `S-014` (`HOLE`, w=50, open): repository governance is pending (branch protection + required status checks setup to enforce `verify:gate`).
+- `S-015` (`HOLE`, w=50, open): governance automation is pending (token-aware drift check between live GitHub branch protection and local policy files).
 
 ## Notes for AI
 
@@ -50,8 +51,9 @@
 - **Read `CHARTER.md` for project identity and design principles (now 33 principles, C-xxx numbered).**
 - **Read `docs/plans/2026-02-28-worldview-design.md` for the worldview design** — the conceptual shift from "game engine" to "world substrate."
 - **Read `docs/plans/2026-02-28-tech-stack-architecture.md` for v0 stack and system boundary decisions** before scaffolding runtime code.
-- **For S-004/S-005/S-006/S-007/S-008/S-009/S-010/S-011/S-012/S-013/S-014 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase handoff aligned with worldview constraints.
+- **For S-004/S-005/S-006/S-007/S-008/S-009/S-010/S-011/S-012/S-013/S-014/S-015 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase handoff aligned with worldview constraints.
 - **For S-013 moment/fork execution details, enforce `docs/plans/2026-03-01-s013-moment-fork-contract.md`** to keep crystallize/fork semantics aligned with worldview principles.
+- **For S-014 governance setup details, enforce `docs/plans/2026-03-01-s014-branch-protection-runbook.md`** before touching repository branch-protection settings.
 - **Signal precedence**: if wording in S-002 (founding vision) conflicts with S-003/CHARTER worldview extensions, use S-003 + CHARTER as current authority.
 - Core terminology shift: "Game" → "World", "Player" → "Inhabitant", "Create" → "Inhabit/Shape", "Share" → "Invite", "engineAI" → "AI Presence"
 - The founding vision prioritizes people who love interactive experiences — they inhabit worlds, not "play games."
@@ -62,8 +64,8 @@
 
 ## Known Limitations
 
-- Phase-0 through phase-8 baselines are implemented; `S-013` is done and verified locally.
-- Branch protection policy is not enforced in repository settings yet; tracked by `S-014`.
+- Phase-0 through phase-9 baselines are implemented; `S-014` is done and verified locally.
+- Branch protection is still applied manually in repository settings; automation and drift detection are tracked by `S-015`.
 - DB export currently preserves key narrative blocks (`signals.vision/description`, `observations.detail`); additional custom fields still require allowlist extension if introduced.
 - Local and CI quality gate are both wired via `pnpm run verify:gate`.
 

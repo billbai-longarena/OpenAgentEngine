@@ -1,0 +1,14 @@
+id: S-015
+type: HOLE
+title: "Automate branch-protection drift audit against GitHub API"
+status: open
+weight: 50
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: unassigned
+module: "scripts"
+tags: [phase-10,governance,branch-protection,automation]
+next: "Add token-aware verification script to compare live branch protection for main vs policy files and report drift in CI-safe mode"
+touch_count: 0
+source: emergent
