@@ -19,6 +19,45 @@ source "${SCRIPT_DIR}/field-lib.sh"
 
 log_info "=== Arrival sequence starting ==="
 
+handoff_is_actionable() {
+  # Return 0 when handoff still points to at least one non-final signal.
+  # If no signal IDs are present, keep the handoff as generic context.
+  local handoff="$1"
+  [ -z "$handoff" ] && return 1
+
+  local refs
+  refs=$(printf "%s\n" "$handoff" | grep -oE 'S-[0-9]+' | sort -u || true)
+  [ -z "$refs" ] && return 0
+
+  if has_db; then
+    local sid status
+    while IFS= read -r sid; do
+      [ -z "$sid" ] && continue
+      status=$(db_exec "SELECT status FROM signals WHERE id='$(db_escape "$sid")' LIMIT 1;" 2>/dev/null || true)
+      case "$status" in
+        done|archived|parked) ;;
+        *) return 0 ;;
+      esac
+    done <<< "$refs"
+    return 1
+  fi
+
+  local sid signal_file status
+  while IFS= read -r sid; do
+    [ -z "$sid" ] && continue
+    signal_file="${SIGNALS_DIR}/active/${sid}.yaml"
+    if [ ! -f "$signal_file" ]; then
+      return 0
+    fi
+    status=$(yaml_read "$signal_file" "status")
+    case "$status" in
+      done|archived|parked) ;;
+      *) return 0 ;;
+    esac
+  done <<< "$refs"
+  return 1
+}
+
 # ── Step 1: Ensure signals infrastructure ────────────────────────────
 
 if has_signal_dir; then
@@ -68,7 +107,8 @@ if has_db; then
   [ "$alarm" = "false" ] && check_alarm && alarm="true"
   [ "$wip" = "absent" ] || [ -z "$wip" ] && wip=$(check_wip)
   [ "$build" = "unknown" ] || [ -z "$build" ] && build=$(check_build)
-  [ "$branch" = "unknown" ] || [ -z "$branch" ] && branch=$(current_branch)
+  detected_branch=$(current_branch)
+  [ -n "$detected_branch" ] && branch="$detected_branch"
 elif [ -f "$BREATH_FILE" ]; then
   alarm=$(yaml_read "$BREATH_FILE" "alarm")
   wip=$(yaml_read "$BREATH_FILE" "wip")
@@ -203,7 +243,7 @@ if has_db; then
   ph_row=$(db_pheromone_latest 2>/dev/null || true)
   if [ -n "$ph_row" ]; then
     IFS=$'\t' read -r _ph_agent _ph_ts _ph_caste _ph_branch _ph_commit _ph_completed ph_unresolved ph_pred_useful _ph_wip _ph_sigcount <<< "$ph_row"
-    if [ -n "$ph_unresolved" ] && [ "$ph_unresolved" != "null" ] && [ "$ph_unresolved" != "" ]; then
+    if [ -n "$ph_unresolved" ] && [ "$ph_unresolved" != "null" ] && [ "$ph_unresolved" != "" ] && handoff_is_actionable "$ph_unresolved"; then
       situation="${situation}Handoff: ${ph_unresolved}\n"
     fi
     if [ "$ph_pred_useful" = "0" ]; then
@@ -214,7 +254,7 @@ elif [ -f "$PHEROMONE_FILE" ]; then
   ph_unresolved=""
   # Simple JSON extraction without jq
   ph_unresolved=$(grep '"unresolved"' "$PHEROMONE_FILE" 2>/dev/null | sed 's/.*"unresolved"[[:space:]]*:[[:space:]]*//' | tr -d '",')
-  if [ -n "$ph_unresolved" ] && [ "$ph_unresolved" != "null" ]; then
+  if [ -n "$ph_unresolved" ] && [ "$ph_unresolved" != "null" ] && handoff_is_actionable "$ph_unresolved"; then
     situation="${situation}Handoff: ${ph_unresolved}\n"
   fi
 
