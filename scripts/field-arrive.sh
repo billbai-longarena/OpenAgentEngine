@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # field-arrive.sh — Core arrival script: generates .birth
-# This is the most critical file in the Termite Protocol v3.0.
+# This is the most critical file in the Termite Protocol v10.0.
 # It replaces the need for agents to read TERMITE_PROTOCOL.md directly.
 #
 # Logic:

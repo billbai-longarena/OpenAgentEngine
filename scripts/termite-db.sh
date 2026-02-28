@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# termite-db.sh — SQLite abstraction layer for Termite Protocol v3.4
+# termite-db.sh — SQLite abstraction layer for Termite Protocol v10.0
 # Source this file after field-lib.sh. Provides atomic DB operations.
 # All shared state goes through these functions — no direct YAML writes needed.
 

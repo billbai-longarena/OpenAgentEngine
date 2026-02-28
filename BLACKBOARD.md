@@ -1,6 +1,6 @@
 # BLACKBOARD.md — OpenAgentEngine
 
-> Genesis: 2026-02-28. OpenAgentEngine - A new kind of game engine for AI agents and human game lovers to collaborate.
+> Genesis: 2026-02-28. OpenAgentEngine - A world substrate for AI and human co-inhabitation.
 
 ## Project Summary
 
@@ -11,6 +11,7 @@
 - **Core Loop**: Inhabit → Shape → Resonate → Invite (no mode switches). See C-033, C-034.
 - **Design Philosophy**: Same signal-driven adaptive pattern operates at every scale (three-mound isomorphism). See C-400, C-401.
 - **Worldview Design**: `docs/plans/2026-02-28-worldview-design.md` — comprehensive design rationale for the shift from "game engine" to "world substrate."
+- **Tech Stack & Architecture Baseline**: `docs/plans/2026-02-28-tech-stack-architecture.md` — v0 stack decisions and phased execution path (signal S-001).
 
 ## Colony Health
 
@@ -18,14 +19,14 @@
 |-----------|--------|-------|---------------|
 | Build     | ?      | —     | unverified    |
 | Tests     | ?      | —     | unverified    |
-| Docs      | ?      | —     | unverified    |
+| Docs      | baseline established | ↑ | 2026-02-28 |
 
 ## Signals
 
 | ID | Type | Title | Weight | TTL | Status | Owner |
 |----|------|-------|--------|-----|--------|-------|
-| S-001 | EXPLORE | Map project structure, establish tech stack | 35 | 14 | open | unassigned |
-| S-002 | PHEROMONE | Founding Vision — project identity and design principles | 90 | 90 | open | unassigned |
+| S-001 | EXPLORE | Map project structure, establish tech stack | 45 | 14 | open | unassigned |
+| S-002 | PHEROMONE | Founding Vision — project identity and design principles | 86 | 90 | open | unassigned |
 | S-003 | PHEROMONE | Worldview Design — from game engine to world substrate | 90 | 90 | open | unassigned |
 
 ## Hotspot Areas
@@ -37,6 +38,8 @@
 - This is a greenfield project. Everything needs to be built from scratch.
 - **Read `CHARTER.md` for project identity and design principles (now 33 principles, C-xxx numbered).**
 - **Read `docs/plans/2026-02-28-worldview-design.md` for the worldview design** — the conceptual shift from "game engine" to "world substrate."
+- **Read `docs/plans/2026-02-28-tech-stack-architecture.md` for v0 stack and system boundary decisions** before scaffolding runtime code.
+- **Signal precedence**: if wording in S-002 (founding vision) conflicts with S-003/CHARTER worldview extensions, use S-003 + CHARTER as current authority.
 - Core terminology shift: "Game" → "World", "Player" → "Inhabitant", "Create" → "Inhabit/Shape", "Share" → "Invite", "engineAI" → "AI Presence"
 - The founding vision prioritizes people who love interactive experiences — they inhabit worlds, not "play games."
 - AI is a fluid presence (not a fixed assistant): physics → conversationalist → craftsman → curator, role driven by behavioral signals.
@@ -46,7 +49,8 @@
 
 ## Known Limitations
 
-(none — genesis session, pending first verification)
+- Runtime codebase is not scaffolded yet (planning artifacts exist, executable app services do not).
+- Build/test pipeline for product runtime is not established yet (field scripts only).
 
 ## Immune Log
 

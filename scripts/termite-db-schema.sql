@@ -1,4 +1,4 @@
--- Termite Protocol v3.4 SQLite Schema
+-- Termite Protocol v10.0 SQLite Schema
 -- All shared state in a single WAL-mode database.
 -- YAML files become export-only (audit, human reading).
 

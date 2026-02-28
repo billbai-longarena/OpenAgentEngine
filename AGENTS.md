@@ -70,6 +70,7 @@ IF 不可执行:
 | 遇到什么 | 读哪里 |
 |----------|--------|
 | **项目宪章 / 设计原则** | **`CHARTER.md`** |
+| **世界观设计 / 概念架构** | **`docs/plans/2026-02-28-worldview-design.md`** |
 | 种姓判定规则 | `TERMITE_PROTOCOL.md` Part II |
 | 种姓详解与权限 | `TERMITE_PROTOCOL.md` Part III |
 | 信号 YAML 格式 | `signals/README.md` |
@@ -82,17 +83,23 @@ IF 不可执行:
 
 ## Project Overview / Charter Soul
 
-OpenAgentEngine — lets non-technical game lovers create and modify games via natural language.
+OpenAgentEngine — a World Substrate where humans and AI co-inhabit, shape, resonate, and invite.
 
-- **Not a traditional game engine** (C-002). Users are players with taste, not developers (C-030).
-- **Three Mounds**: Dev = AI termites + human devs → Product = engineAI (runtime AI) → Customer = game lovers.
-- **Interaction split**: buttons for high-frequency actions, natural language for creative work (C-101).
-- **AI is first-class**: termites are first-class developers (C-200), engineAI is a collaborator not a tool (C-021).
-- **Making design decisions → read `CHARTER.md`** (23 numbered principles, full identity and design guidance).
+- **Not a traditional game engine** (C-002). The fundamental unit is "World", not "Game" (C-005).
+- **Three Mounds**: Dev = AI termites + human devs → Product = AI Presence in world → Customer = inhabitants.
+- **Core loop**: Inhabit → Shape → Resonate → Invite, with no mode switch (C-033).
+- **AI is fluid presence**: physics/conversationalist/craftsman/curator, with aesthetic judgment (C-305, C-306).
+- **Three-mound isomorphism**: the same signal-driven adaptation pattern recurs at each scale (C-400).
+- **Making design decisions → read `CHARTER.md` + `docs/plans/2026-02-28-worldview-design.md`** (33 numbered principles).
 
 ## Project Structure & Module Organization
 
-<!-- 在此填写你的项目目录结构说明 -->
+- `scripts/`: 场基础设施脚本（arrive/cycle/deposit/claim）与 SQLite 支撑脚本。
+- `signals/`: 信号系统（`active/`、`rules/`、`observations/`、`claims/`、`archive/`）。
+- `docs/plans/`: 设计决策与架构计划文档（含世界观与技术栈方案）。
+- `CHARTER.md`: 项目宪章（P1 追加式原则，设计决策锚点）。
+- `BLACKBOARD.md`: 项目动态态势与健康状态。
+- `TERMITE_PROTOCOL.md`: 协议全量定义（P0）。
 
 ---
 
@@ -100,8 +107,9 @@ OpenAgentEngine — lets non-technical game lovers create and modify games via n
 
 | 任务关键词 | 局部黑板 |
 | ---------- | -------- |
-<!-- | 模块 A 相关关键词 | `path/to/module-a/BLACKBOARD.md` | -->
-<!-- | 模块 B 相关关键词 | `path/to/module-b/BLACKBOARD.md` | -->
+| 协议/信号/认领/沉积 | `BLACKBOARD.md` |
+| 宪章/世界观/架构决策 | `BLACKBOARD.md` |
+| 技术栈与系统架构规划 | `BLACKBOARD.md` |
 
 ---
 
@@ -109,9 +117,11 @@ OpenAgentEngine — lets non-technical game lovers create and modify games via n
 
 | 操作 | 命令 |
 | ---- | ---- |
-<!-- | 安装依赖 | `npm install` | -->
-<!-- | 构建     | `npm run build` | -->
-<!-- | 测试     | `npm run test` | -->
+| 到达（生成 `.birth`） | `./scripts/field-arrive.sh` |
+| 完整呼吸（衰减/排水/脉搏） | `./scripts/field-cycle.sh` |
+| 认领状态查看 | `./scripts/field-claim.sh list` |
+| 审计包导出 | `./scripts/field-export-audit.sh <out-dir>` |
+| 技术架构方案（S-001） | `docs/plans/2026-02-28-tech-stack-architecture.md` |
 
 ---
 
@@ -119,14 +129,16 @@ OpenAgentEngine — lets non-technical game lovers create and modify games via n
 
 | 改动类型 | 验证方式 |
 | -------- | -------- |
-<!-- | 后端代码 | 构建通过，无报错 | -->
-<!-- | 前端代码 | 构建通过，无报错 | -->
+| 协议/入口文档 | `rg "termite-kernel:v10.0" AGENTS.md CLAUDE.md TERMITE_PROTOCOL.md` 命中 |
+| 场脚本改动 | `./scripts/field-arrive.sh` 退出码为 0 |
+| 信号协作改动 | `./scripts/field-claim.sh list` 与 claim/release 无冲突 |
 
 ---
 
 ## Configuration & Secrets
 
-<!-- 在此说明环境变量和配置文件结构，不要包含实际密钥值 -->
+- 协议阈值支持 `TERMITE_*` 环境变量覆盖（详见 `TERMITE_PROTOCOL.md` Part II）。
+- 当前仓库未引入产品运行时密钥；后续应用层密钥应放在 `.env.local` / 部署平台密钥管理中，不入库。
 
 ---
 
@@ -140,4 +152,4 @@ OpenAgentEngine — lets non-technical game lovers create and modify games via n
 
 | 黑板 | 路径 |
 | ---- | ---- |
-<!-- | 模块 A | `path/to/module-a/BLACKBOARD.md` | -->
+| Root | `BLACKBOARD.md` |
