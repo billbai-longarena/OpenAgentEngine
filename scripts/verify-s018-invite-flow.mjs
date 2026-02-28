@@ -116,6 +116,45 @@ async function redeemInvite(inviteId, redeemForkWorldId) {
   return await response.json();
 }
 
+async function redeemInviteResult(inviteId, redeemForkWorldId) {
+  const response = await fetch(`${gatewayBaseUrl}/invite/${encodeURIComponent(inviteId)}/redeem`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ forkWorldId: redeemForkWorldId })
+  });
+  let payload = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+  return { status: response.status, payload };
+}
+
+async function verifyConcurrentRedeem(inviteId, forkWorldPrefix) {
+  const [left, right] = await Promise.all([
+    redeemInviteResult(inviteId, `${forkWorldPrefix}-left`),
+    redeemInviteResult(inviteId, `${forkWorldPrefix}-right`)
+  ]);
+
+  const statuses = [left.status, right.status].sort((a, b) => a - b);
+  if (statuses[0] !== 201 || statuses[1] !== 409) {
+    throw new Error(
+      `expected concurrent redeem statuses [201,409], got [${left.status},${right.status}]`
+    );
+  }
+
+  const exhausted = left.status === 409 ? left : right;
+  if (exhausted.payload?.error !== 'invite_exhausted') {
+    throw new Error(
+      `expected concurrent redeem 409 payload error invite_exhausted, got ${exhausted.payload?.error}`
+    );
+  }
+
+  const success = left.status === 201 ? left : right;
+  return success.payload;
+}
+
 async function expectInviteExhausted(inviteId) {
   const response = await fetch(`${gatewayBaseUrl}/invite/${encodeURIComponent(inviteId)}/redeem`, {
     method: 'POST',
@@ -217,6 +256,18 @@ async function main() {
     const lineage = await verifyLineage(forkWorldId, parentWorldId, moment.momentId);
     const forkReplayCount = await verifyForkReplay(forkWorldId);
     const inviteState = await fetchInvite(invite.inviteId);
+    const concurrentInvite = await createInvite(parentWorldId, moment.momentId);
+    const concurrentRedeemed = await verifyConcurrentRedeem(
+      concurrentInvite.inviteId,
+      `${forkWorldId}-concurrent`
+    );
+    const concurrentLineage = await verifyLineage(
+      concurrentRedeemed.worldId,
+      parentWorldId,
+      moment.momentId
+    );
+    const concurrentForkReplayCount = await verifyForkReplay(concurrentRedeemed.worldId);
+    const concurrentInviteState = await fetchInvite(concurrentInvite.inviteId);
 
     if (!redeemed?.forked) {
       throw new Error(`expected redeem response to be forked=true, got ${JSON.stringify(redeemed)}`);
@@ -230,11 +281,21 @@ async function main() {
     if (inviteState?.canRedeem !== false) {
       throw new Error(`invite canRedeem expected false, got ${inviteState?.canRedeem}`);
     }
+    if (concurrentInviteState?.remainingRedemptions !== 0) {
+      throw new Error(
+        `concurrent invite remaining redemptions mismatch: expected 0, got ${concurrentInviteState?.remainingRedemptions}`
+      );
+    }
+    if (concurrentInviteState?.canRedeem !== false) {
+      throw new Error(
+        `concurrent invite canRedeem expected false, got ${concurrentInviteState?.canRedeem}`
+      );
+    }
 
     await expectInviteExhausted(invite.inviteId);
 
     console.log(
-      `S-018 invite flow verified: parent_replay=${parentReplay.length} moment_tick=${moment.tick} invite=${invite.inviteId} redeemed_world=${redeemed.worldId} remaining=${inviteState.remainingRedemptions} inherited=${lineage.inheritedDeltas} fork_replay=${forkReplayCount}`
+      `S-018 invite flow verified: parent_replay=${parentReplay.length} moment_tick=${moment.tick} invite=${invite.inviteId} redeemed_world=${redeemed.worldId} remaining=${inviteState.remainingRedemptions} inherited=${lineage.inheritedDeltas} fork_replay=${forkReplayCount} concurrent_redeemed_world=${concurrentRedeemed.worldId} concurrent_inherited=${concurrentLineage.inheritedDeltas} concurrent_fork_replay=${concurrentForkReplayCount}`
     );
   } finally {
     await cleanup();

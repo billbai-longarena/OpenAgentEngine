@@ -43,6 +43,7 @@ interface WorldInvite {
 }
 
 const worldClientsByWorld = new Map<string, Set<WorldClient>>();
+const inviteRedeemLocks = new Map<string, Promise<void>>();
 const worldDeltaLogDir = process.env.WORLD_DELTA_LOG_DIR ?? '.runtime-data/world-delta-log';
 const worldMetadataDir = process.env.WORLD_METADATA_DIR ?? '.runtime-data/world-metadata';
 const defaultWorldId = process.env.DEFAULT_WORLD_ID ?? 'world-0001';
@@ -275,6 +276,26 @@ function isInviteExpired(invite: WorldInvite, nowEpochMs: number): boolean {
 
 function remainingInviteRedemptions(invite: WorldInvite): number {
   return Math.max(0, invite.maxRedemptions - invite.redemptionCount);
+}
+
+async function withInviteRedeemLock<T>(inviteId: string, action: () => Promise<T>): Promise<T> {
+  const previous = inviteRedeemLocks.get(inviteId) ?? Promise.resolve();
+  let releaseCurrent: (() => void) | null = null;
+  const current = new Promise<void>((resolve) => {
+    releaseCurrent = resolve;
+  });
+  const tail = previous.then(() => current);
+  inviteRedeemLocks.set(inviteId, tail);
+  await previous;
+
+  try {
+    return await action();
+  } finally {
+    releaseCurrent?.();
+    if (inviteRedeemLocks.get(inviteId) === tail) {
+      inviteRedeemLocks.delete(inviteId);
+    }
+  }
 }
 
 async function listForkLineagesByParent(parentWorldId: string): Promise<WorldForkLineage[]> {
@@ -595,93 +616,95 @@ app.post<{
   Params: { inviteId: string };
   Body: { forkWorldId?: string };
 }>('/invite/:inviteId/redeem', async (request, reply) => {
-  const invite = await loadWorldInvite(request.params.inviteId);
-  if (!invite) {
-    return reply.code(404).send({
-      error: 'invite_not_found',
-      message: `Invite ${request.params.inviteId} was not found`
-    });
-  }
-
-  const now = Date.now();
-  if (isInviteExpired(invite, now)) {
-    return reply.code(410).send({
-      error: 'invite_expired',
-      message: `Invite ${invite.inviteId} expired at ${invite.expiresAt}`
-    });
-  }
-
-  if (remainingInviteRedemptions(invite) <= 0) {
-    return reply.code(409).send({
-      error: 'invite_exhausted',
-      message: `Invite ${invite.inviteId} has no remaining redemptions`
-    });
-  }
-
-  const moments = await loadWorldMoments(invite.parentWorldId);
-  const moment = moments.find((candidate) => candidate.momentId === invite.momentId);
-  if (!moment) {
-    return reply.code(409).send({
-      error: 'invite_invalid',
-      message: `Invite ${invite.inviteId} references missing moment ${invite.momentId}`
-    });
-  }
-
-  let worldId = invite.parentWorldId;
-  let inheritedDeltas = 0;
-  let forked = false;
-  if (invite.forkOnRedeem) {
-    const forkWorldId =
-      parseOptionalText(request.body?.forkWorldId) ?? `${invite.parentWorldId}-invite-${Date.now().toString(36)}`;
-    if (forkWorldId === invite.parentWorldId) {
-      return reply.code(400).send({
-        error: 'invalid_request',
-        message: 'forkWorldId must be different from parent world id'
+  return withInviteRedeemLock(request.params.inviteId, async () => {
+    const invite = await loadWorldInvite(request.params.inviteId);
+    if (!invite) {
+      return reply.code(404).send({
+        error: 'invite_not_found',
+        message: `Invite ${request.params.inviteId} was not found`
       });
     }
 
-    if (
-      (await fileExists(worldDeltaLogPath(forkWorldId))) ||
-      (await fileExists(worldLineagePath(forkWorldId)))
-    ) {
+    const now = Date.now();
+    if (isInviteExpired(invite, now)) {
+      return reply.code(410).send({
+        error: 'invite_expired',
+        message: `Invite ${invite.inviteId} expired at ${invite.expiresAt}`
+      });
+    }
+
+    if (remainingInviteRedemptions(invite) <= 0) {
       return reply.code(409).send({
-        error: 'fork_exists',
-        message: `World ${forkWorldId} already exists`
+        error: 'invite_exhausted',
+        message: `Invite ${invite.inviteId} has no remaining redemptions`
       });
     }
 
-    inheritedDeltas = await seedForkWorldFromMoment(invite.parentWorldId, forkWorldId, moment.tick);
-    const lineage: WorldForkLineage = {
-      worldId: forkWorldId,
-      parentWorldId: invite.parentWorldId,
-      fromMomentId: moment.momentId,
-      fromTick: moment.tick,
-      createdAt: new Date(now).toISOString(),
-      seedContext: invite.seedContext,
-      inheritedDeltas
+    const moments = await loadWorldMoments(invite.parentWorldId);
+    const moment = moments.find((candidate) => candidate.momentId === invite.momentId);
+    if (!moment) {
+      return reply.code(409).send({
+        error: 'invite_invalid',
+        message: `Invite ${invite.inviteId} references missing moment ${invite.momentId}`
+      });
+    }
+
+    let worldId = invite.parentWorldId;
+    let inheritedDeltas = 0;
+    let forked = false;
+    if (invite.forkOnRedeem) {
+      const forkWorldId =
+        parseOptionalText(request.body?.forkWorldId) ?? `${invite.parentWorldId}-invite-${Date.now().toString(36)}`;
+      if (forkWorldId === invite.parentWorldId) {
+        return reply.code(400).send({
+          error: 'invalid_request',
+          message: 'forkWorldId must be different from parent world id'
+        });
+      }
+
+      if (
+        (await fileExists(worldDeltaLogPath(forkWorldId))) ||
+        (await fileExists(worldLineagePath(forkWorldId)))
+      ) {
+        return reply.code(409).send({
+          error: 'fork_exists',
+          message: `World ${forkWorldId} already exists`
+        });
+      }
+
+      inheritedDeltas = await seedForkWorldFromMoment(invite.parentWorldId, forkWorldId, moment.tick);
+      const lineage: WorldForkLineage = {
+        worldId: forkWorldId,
+        parentWorldId: invite.parentWorldId,
+        fromMomentId: moment.momentId,
+        fromTick: moment.tick,
+        createdAt: new Date(now).toISOString(),
+        seedContext: invite.seedContext,
+        inheritedDeltas
+      };
+      await persistWorldLineage(lineage);
+      worldId = forkWorldId;
+      forked = true;
+    }
+
+    const updatedInvite: WorldInvite = {
+      ...invite,
+      redemptionCount: invite.redemptionCount + 1,
+      lastRedeemedAt: new Date(now).toISOString()
     };
-    await persistWorldLineage(lineage);
-    worldId = forkWorldId;
-    forked = true;
-  }
+    await persistWorldInvite(updatedInvite);
 
-  const updatedInvite: WorldInvite = {
-    ...invite,
-    redemptionCount: invite.redemptionCount + 1,
-    lastRedeemedAt: new Date(now).toISOString()
-  };
-  await persistWorldInvite(updatedInvite);
-
-  return reply.code(201).send({
-    inviteId: updatedInvite.inviteId,
-    parentWorldId: updatedInvite.parentWorldId,
-    momentId: updatedInvite.momentId,
-    worldId,
-    forked,
-    inheritedDeltas,
-    redemptionCount: updatedInvite.redemptionCount,
-    remainingRedemptions: remainingInviteRedemptions(updatedInvite),
-    expiresAt: updatedInvite.expiresAt
+    return reply.code(201).send({
+      inviteId: updatedInvite.inviteId,
+      parentWorldId: updatedInvite.parentWorldId,
+      momentId: updatedInvite.momentId,
+      worldId,
+      forked,
+      inheritedDeltas,
+      redemptionCount: updatedInvite.redemptionCount,
+      remainingRedemptions: remainingInviteRedemptions(updatedInvite),
+      expiresAt: updatedInvite.expiresAt
+    });
   });
 });
 
