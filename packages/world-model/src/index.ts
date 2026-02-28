@@ -20,9 +20,9 @@ export interface WorldState {
   lastSignal?: SignalEvent;
 }
 
-export function createDefaultWorldState(): WorldState {
+export function createDefaultWorldState(worldId = 'world-0001'): WorldState {
   return {
-    worldId: 'world-0001',
+    worldId,
     createdAt: new Date().toISOString()
   };
 }

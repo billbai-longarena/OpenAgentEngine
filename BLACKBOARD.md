@@ -30,10 +30,13 @@
 | S-003 | PHEROMONE | Worldview Design — from game engine to world substrate | 88 | 90 | open | unassigned |
 | S-004 | HOLE | Scaffold phase-0 monorepo and baseline services | 30 | 14 | done | codex-worker-s004 |
 | S-005 | HOLE | Implement phase-1 runtime loop + WS delta flow | 68 | 14 | done | codex-heartbeat |
+| S-006 | HOLE | Implement phase-2 world delta persistence and replay baseline | 66 | 14 | done | codex-heartbeat |
+| S-007 | HOLE | Implement phase-3 multi-world routing and world-scoped WS channels | 64 | 14 | done | codex-heartbeat |
+| S-008 | HOLE | Establish phase-4 build/test quality gate for runtime-gateway-world contracts | 62 | 14 | open | unassigned |
 
 ## Hotspot Areas
 
-(none — phase-1 single-world WS delta baseline validated)
+- `S-008` (`HOLE`, w=62, open): quality gate is pending (single command path for workspace + `S-005` + `S-006` + `S-007` verification, with pass/fail contract).
 
 ## Notes for AI
 
@@ -41,7 +44,7 @@
 - **Read `CHARTER.md` for project identity and design principles (now 33 principles, C-xxx numbered).**
 - **Read `docs/plans/2026-02-28-worldview-design.md` for the worldview design** — the conceptual shift from "game engine" to "world substrate."
 - **Read `docs/plans/2026-02-28-tech-stack-architecture.md` for v0 stack and system boundary decisions** before scaffolding runtime code.
-- **For S-004/S-005 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase-0/phase-1 handoff aligned with worldview constraints.
+- **For S-004/S-005/S-006/S-007/S-008 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase handoff aligned with worldview constraints.
 - **Signal precedence**: if wording in S-002 (founding vision) conflicts with S-003/CHARTER worldview extensions, use S-003 + CHARTER as current authority.
 - Core terminology shift: "Game" → "World", "Player" → "Inhabitant", "Create" → "Inhabit/Shape", "Share" → "Invite", "engineAI" → "AI Presence"
 - The founding vision prioritizes people who love interactive experiences — they inhabit worlds, not "play games."
@@ -52,8 +55,8 @@
 
 ## Known Limitations
 
-- Phase-0 scaffold and phase-1 single-world WS delta baseline are implemented; persistence, replay, and multi-world routing are still pending.
-- Build/test pipeline for product runtime is not established yet (field scripts only).
+- Phase-0 scaffold and phase-1/phase-2/phase-3 baselines are implemented; `S-007` is done and verified.
+- Unified build/test quality gate is not established yet; tracked by `S-008`.
 - `termite-db-export.sh` currently exports only schema-mapped fields; extra narrative YAML keys can be dropped if not preserved in DB/docs.
 
 ## Immune Log

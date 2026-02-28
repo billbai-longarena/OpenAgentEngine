@@ -1,0 +1,14 @@
+id: S-007
+type: HOLE
+title: "Implement phase-3 multi-world routing and world-scoped WS channels"
+status: done
+weight: 64
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-heartbeat
+module: "apps/gateway"
+tags: [phase-3,multi-world,routing,websocket]
+next: "Route runtime deltas by worldId and let clients subscribe to specific world channels"
+touch_count: 1
+source: emergent

@@ -6,6 +6,4 @@ confidence: high
 created: 2026-02-28
 source: autonomous
 detail: |
-  Release workflow appears to assume every claim ends with open status.
-  If finalization happens before release, done state is lost.
-  Consider release mode flag or idempotent done-preserving behavior.
+  Release workflow appears to assume every claim ends with open status. If finalization happens before release, done state is lost. Consider release mode flag or idempotent done-preserving behavior.

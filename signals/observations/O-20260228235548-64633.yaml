@@ -6,5 +6,4 @@ confidence: high
 created: 2026-02-28
 source: autonomous
 detail: |
-  Export helpers serialize only schema columns from SQLite, so additional narrative keys are removed from YAML outputs.
-  Preserve long-form context in docs/CHARTER or extend DB schema/export mappings.
+  Export helpers serialize only schema columns from SQLite, so additional narrative keys are removed from YAML outputs. Preserve long-form context in docs/CHARTER or extend DB schema/export mappings.

@@ -23,12 +23,22 @@ node scripts/verify-workspace.mjs
 node scripts/verify-s005-flow.mjs
 ```
 
-3. Start local infra baseline (PostgreSQL + Redis + NATS):
+3. Verify phase-2 persistence+replay baseline:
+```bash
+node scripts/verify-s006-replay.mjs
+```
+
+4. Verify phase-3 multi-world routing (world-scoped WS + replay isolation):
+```bash
+node scripts/verify-s007-routing.mjs
+```
+
+5. Start local infra baseline (PostgreSQL + Redis + NATS):
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
-4. Optional workspace commands (after installing deps):
+6. Optional workspace commands (after installing deps):
 ```bash
 pnpm install
 pnpm run lint

@@ -2,9 +2,11 @@ import { createDefaultWorldState, type SignalEvent } from '@openagentengine/worl
 import type { WorldDelta } from '@openagentengine/signal-schema';
 import WebSocket from 'ws';
 
-const world = createDefaultWorldState();
+const worldId = process.env.WORLD_ID ?? 'world-0001';
+const world = createDefaultWorldState(worldId);
 let tick = 0;
 const gatewayRuntimeWsUrl = process.env.GATEWAY_RUNTIME_WS_URL ?? 'ws://127.0.0.1:3001/ws/runtime';
+const tickIntervalMs = Math.max(100, Number.parseInt(process.env.TICK_INTERVAL_MS ?? '1000', 10) || 1000);
 let runtimeSocket: WebSocket | null = null;
 
 function emitRuntimeTick(): SignalEvent {
@@ -49,4 +51,4 @@ setInterval(() => {
     runtimeSocket.send(JSON.stringify(delta));
   }
   console.log('[runtime]', world.worldId, signal.id, signal.context);
-}, 1000);
+}, tickIntervalMs);
