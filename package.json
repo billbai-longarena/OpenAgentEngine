@@ -17,6 +17,7 @@
     "verify:s011": "node scripts/verify-s011-export-preserve.mjs",
     "verify:s013": "node scripts/verify-s013-moment-fork.mjs",
     "verify:s014": "node scripts/verify-s014-governance-runbook.mjs",
+    "verify:s015": "node scripts/verify-s015-branch-protection-drift.mjs",
     "verify:gate": "node scripts/verify-quality-gate.mjs"
   },
   "devDependencies": {

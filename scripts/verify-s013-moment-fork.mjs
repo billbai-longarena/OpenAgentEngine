@@ -113,6 +113,18 @@ async function verifyLineage(worldId, expectedParent, expectedMomentId) {
   return lineage;
 }
 
+async function verifyForkListing(parentWorld, expectedForkWorld) {
+  const response = await fetch(`${gatewayBaseUrl}/world/${encodeURIComponent(parentWorld)}/forks`);
+  if (!response.ok) throw new Error(`fork listing request failed for ${parentWorld}`);
+  const payload = await response.json();
+  const forks = Array.isArray(payload?.forks) ? payload.forks : [];
+  const found = forks.find((fork) => fork?.worldId === expectedForkWorld);
+  if (!found) {
+    throw new Error(`fork listing missing ${expectedForkWorld} under parent ${parentWorld}`);
+  }
+  return forks.length;
+}
+
 async function verifyForkReplay(worldId) {
   const response = await fetch(
     `${gatewayBaseUrl}/world/${encodeURIComponent(worldId)}/replay?sinceTick=1&limit=100`
@@ -174,11 +186,12 @@ async function main() {
     const parentReplay = await waitForReplayCount(parentWorldId, 2, 12000);
     const moment = await createMoment(parentWorldId);
     const fork = await createFork(parentWorldId, moment.momentId, forkWorldId);
+    const forkListingCount = await verifyForkListing(parentWorldId, forkWorldId);
     const lineage = await verifyLineage(forkWorldId, parentWorldId, moment.momentId);
     const forkReplayCount = await verifyForkReplay(forkWorldId);
 
     console.log(
-      `S-013 moment/fork verified: parent_replay=${parentReplay.length} moment_tick=${moment.tick} fork=${fork.forkWorldId} inherited=${lineage.inheritedDeltas} fork_replay=${forkReplayCount}`
+      `S-013 moment/fork verified: parent_replay=${parentReplay.length} moment_tick=${moment.tick} fork=${fork.forkWorldId} forks=${forkListingCount} inherited=${lineage.inheritedDeltas} fork_replay=${forkReplayCount}`
     );
   } finally {
     await cleanup();

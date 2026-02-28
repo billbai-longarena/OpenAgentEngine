@@ -49,7 +49,7 @@ Pass marker: `S-011 export-preserve verified: signal=... observation=... markers
 ```bash
 node scripts/verify-s013-moment-fork.mjs
 ```
-Pass marker: `S-013 moment/fork verified: parent_replay=... moment_tick=... fork=... inherited=... fork_replay=...`
+Pass marker: `S-013 moment/fork verified: parent_replay=... moment_tick=... fork=... forks=... inherited=... fork_replay=...`
 
 8. Verify phase-9 governance runbook and branch-protection policy artifacts:
 ```bash
@@ -57,7 +57,13 @@ node scripts/verify-s014-governance-runbook.mjs
 ```
 Pass marker: `S-014 governance runbook verified: branch=main checks=verify-gate approvals=1`
 
-9. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 + S-014 checks):
+9. Verify phase-10 branch-protection drift audit (token-aware, CI-safe skip when credentials are absent):
+```bash
+node scripts/verify-s015-branch-protection-drift.mjs
+```
+Pass marker: `S-015 branch-protection drift verified: ...`
+
+10. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 + S-014 + S-015 checks):
 ```bash
 pnpm run verify:gate
 ```
@@ -71,20 +77,21 @@ Pass criteria:
 - `phase-6-export-preserve` prints `S-011 export-preserve verified...`
 - `phase-8-moment-fork` prints `S-013 moment/fork verified...`
 - `phase-9-governance-runbook` prints `S-014 governance runbook verified...`
+- `phase-10-governance-drift-audit` prints `S-015 branch-protection drift verified...`
 - command exits `0` and ends with `Quality gate passed.`
 
-10. CI wiring:
+11. CI wiring:
 ```text
 .github/workflows/verify-gate.yml
 ```
 This workflow runs `pnpm run verify:gate` on `pull_request`, `push` to `main`, and manual dispatch.
 
-11. Start local infra baseline (PostgreSQL + Redis + NATS):
+12. Start local infra baseline (PostgreSQL + Redis + NATS):
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
-12. Optional workspace commands (after installing deps):
+13. Optional workspace commands (after installing deps):
 ```bash
 pnpm install
 pnpm run lint

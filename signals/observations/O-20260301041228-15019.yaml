@@ -1,0 +1,9 @@
+id: O-20260301041228-15019
+pattern: "S-013 fork lineage query coverage extended with parent fork listing"
+context: "Phase-8 usability hardening"
+reporter: "termite:2026-03-01:worker"
+confidence: medium
+created: 2026-03-01
+source: autonomous
+detail: |
+  Added GET /world/:worldId/forks in gateway by scanning lineage metadata and extended verify-s013 to assert fork listing contains newly created fork worlds.

@@ -41,6 +41,11 @@ const steps = [
     name: 'phase-9-governance-runbook',
     command: ['node', 'scripts/verify-s014-governance-runbook.mjs'],
     successMarker: 'S-014 governance runbook verified'
+  },
+  {
+    name: 'phase-10-governance-drift-audit',
+    command: ['node', 'scripts/verify-s015-branch-protection-drift.mjs'],
+    successMarker: 'S-015 branch-protection drift verified'
   }
 ];
 

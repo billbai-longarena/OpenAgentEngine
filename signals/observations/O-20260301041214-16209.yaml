@@ -1,0 +1,9 @@
+id: O-20260301041214-16209
+pattern: "S-015 branch-protection drift audit implemented and quality-gated"
+context: "Token-aware governance automation"
+reporter: "termite:2026-03-01:worker"
+confidence: high
+created: 2026-03-01
+source: autonomous
+detail: |
+  Added scripts/verify-s015-branch-protection-drift.mjs to compare local branch-protection policy/API templates against live GitHub branch protection when credentials are available, with CI-safe skip output when credentials are absent. Wired verify:s015 into package scripts and phase-10 quality gate.

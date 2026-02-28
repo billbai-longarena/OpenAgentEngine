@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import { randomUUID } from 'node:crypto';
-import { access, appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { access, appendFile, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { isWorldDelta, type WorldDelta } from '@openagentengine/signal-schema';
 
@@ -206,6 +206,28 @@ async function persistWorldLineage(lineage: WorldForkLineage): Promise<void> {
   await writeFile(worldLineagePath(lineage.worldId), `${JSON.stringify(lineage, null, 2)}\n`, 'utf8');
 }
 
+async function listForkLineagesByParent(parentWorldId: string): Promise<WorldForkLineage[]> {
+  const lineageDir = join(worldMetadataDir, 'lineage');
+  let files: string[] = [];
+  try {
+    files = await readdir(lineageDir);
+  } catch {
+    return [];
+  }
+
+  const forkLineages: WorldForkLineage[] = [];
+  for (const file of files) {
+    if (!file.endsWith('.json')) continue;
+    const worldId = file.slice(0, -'.json'.length);
+    const lineage = await loadWorldLineage(worldId);
+    if (!lineage) continue;
+    if (lineage.parentWorldId === parentWorldId) {
+      forkLineages.push(lineage);
+    }
+  }
+  return forkLineages.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+}
+
 function mapDeltasToForkWorld(sourceDeltas: WorldDelta[], forkWorldId: string): WorldDelta[] {
   const sorted = [...sourceDeltas].sort((a, b) => a.tick - b.tick);
   return sorted.map((delta, index) => ({
@@ -339,6 +361,18 @@ app.post<{
     });
   }
   return reply.code(201).send(moment);
+});
+
+app.get<{
+  Params: { worldId: string };
+}>('/world/:worldId/forks', async (request) => {
+  const parentWorldId = request.params.worldId;
+  const forks = await listForkLineagesByParent(parentWorldId);
+  return {
+    parentWorldId,
+    count: forks.length,
+    forks
+  };
 });
 
 app.post<{
