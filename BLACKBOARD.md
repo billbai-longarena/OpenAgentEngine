@@ -32,9 +32,11 @@
 ## Notes for AI
 
 - This is a greenfield project. Everything needs to be built from scratch.
+- **Read `CHARTER.md` for project identity and design principles (23 principles, C-xxx numbered).**
 - The founding vision prioritizes non-technical users who love games.
 - engineAI is the AI agent that serves as the bridge between human creativity and game implementation.
 - Natural language is the primary interface for creative work; buttons for high-frequency operations.
+- O-001 recorded: Termite Protocol lacks a "project charter" concept — to be submitted for protocol audit later.
 
 ## Known Limitations
 

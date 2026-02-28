@@ -69,6 +69,7 @@ IF 不可执行:
 
 | 遇到什么 | 读哪里 |
 |----------|--------|
+| **项目宪章 / 设计原则** | **`CHARTER.md`** |
 | 种姓判定规则 | `TERMITE_PROTOCOL.md` Part II |
 | 种姓详解与权限 | `TERMITE_PROTOCOL.md` Part III |
 | 信号 YAML 格式 | `signals/README.md` |

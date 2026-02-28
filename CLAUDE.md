@@ -49,6 +49,7 @@
 
 | 遇到什么 | 读哪里 |
 |----------|--------|
+| **项目宪章 / 设计原则** | **`CHARTER.md`** |
 | 种姓疑问 | `TERMITE_PROTOCOL.md` Part III |
 | 信号格式 | `signals/README.md` |
 | 并发冲突 | `TERMITE_PROTOCOL.md` Part II §4.5 |
