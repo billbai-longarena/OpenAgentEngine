@@ -1,0 +1,14 @@
+id: S-019
+type: HOLE
+title: "Implement shared transactional invite store to guarantee cross-instance redeem atomicity"
+status: open
+weight: 46
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: unassigned
+module: "apps/gateway"
+tags: [phase-13,invite,consistency,multi-instance]
+next: "Introduce a shared storage adapter with atomic compare-and-swap or DB transaction for redeem count + expiry validation."
+touch_count: 0
+source: emergent
