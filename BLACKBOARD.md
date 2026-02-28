@@ -46,6 +46,7 @@
 | S-019 | HOLE | Implement shared transactional invite store to guarantee cross-instance redeem atomicity | 46 | 14 | done | codex-worker-s019 |
 | S-020 | HOLE | Design external transactional invite store contract for multi-region redeem consistency | 40 | 14 | done | codex-worker-s020-contract |
 | S-021 | HOLE | Implement external transactional invite store adapter for isolated/multi-region gateways | 38 | 14 | done | codex-worker-s021-adapter |
+| S-022 | HOLE | Implement non-filesystem external invite store adapter (transactional backend) | 36 | 14 | open | unassigned |
 
 ## Hotspot Areas
 
@@ -55,6 +56,7 @@
 - Invite cross-instance atomicity closure captured on 2026-03-01: gateway now uses distributed lock files (`WORLD_INVITE_LOCK_DIR`) + atomic invite writes and both `verify:s018` and `verify:s019` assert cross-instance concurrent redeem outcomes `[201,409]`.
 - S-020 closure captured on 2026-03-01: external invite-store contract is defined in `docs/plans/2026-03-01-s020-external-invite-store-contract.md` and `verify:s020` validates isolated storage boundary behavior (`[201,404]` with `invite_not_found` on isolated peer).
 - S-021 closure captured on 2026-03-01: gateway decouples invite persistence via `WORLD_INVITE_STORE_DIR`; `verify:s021` and `verify:gate` phase-15 validate isolated metadata roots with shared invite-store consistency (`[201,409]` with loser `invite_exhausted`).
+- S-022 seeded on 2026-03-01: next execution target is a true non-filesystem transactional invite store backend (PostgreSQL preferred) with a new verification phase on top of S-021.
 
 ## Notes for AI
 
@@ -62,10 +64,11 @@
 - **Read `CHARTER.md` for project identity and design principles (now 33 principles, C-xxx numbered).**
 - **Read `docs/plans/2026-02-28-worldview-design.md` for the worldview design** — the conceptual shift from "game engine" to "world substrate."
 - **Read `docs/plans/2026-02-28-tech-stack-architecture.md` for v0 stack and system boundary decisions** before scaffolding runtime code.
-- **For S-004/S-005/S-006/S-007/S-008/S-009/S-010/S-011/S-012/S-013/S-014/S-015/S-016/S-017/S-018/S-019/S-020/S-021 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase handoff aligned with worldview constraints.
+- **For S-004/S-005/S-006/S-007/S-008/S-009/S-010/S-011/S-012/S-013/S-014/S-015/S-016/S-017/S-018/S-019/S-020/S-021/S-022 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase handoff aligned with worldview constraints.
 - **For S-013 moment/fork execution details, enforce `docs/plans/2026-03-01-s013-moment-fork-contract.md`** to keep crystallize/fork semantics aligned with worldview principles.
 - **For S-014 governance setup details, enforce `docs/plans/2026-03-01-s014-branch-protection-runbook.md`** before touching repository branch-protection settings.
 - **For S-020 invite store boundary and adapter contract, enforce `docs/plans/2026-03-01-s020-external-invite-store-contract.md`.**
+- **For S-022 non-filesystem invite store backend execution, enforce `docs/plans/2026-03-01-s022-nonfilesystem-invite-store-plan.md`.**
 - **Signal precedence**: if wording in S-002 (founding vision) conflicts with S-003/CHARTER worldview extensions, use S-003 + CHARTER as current authority.
 - Core terminology shift: "Game" → "World", "Player" → "Inhabitant", "Create" → "Inhabit/Shape", "Share" → "Invite", "engineAI" → "AI Presence"
 - The founding vision prioritizes people who love interactive experiences — they inhabit worlds, not "play games."
@@ -80,7 +83,7 @@
 - Branch protection and drift-audit credentials are configured; continue monitoring `verify:gate` for future context drift.
 - DB export currently preserves key narrative blocks (`signals.vision/description`, `observations.detail`); additional custom fields still require allowlist extension if introduced.
 - Local and CI quality gate are both wired via `pnpm run verify:gate`.
-- Current external adapter is filesystem-backed (`WORLD_INVITE_STORE_DIR` + lock files); true non-filesystem datastore adapters remain future extension work.
+- Current external adapter is filesystem-backed (`WORLD_INVITE_STORE_DIR` + lock files); true non-filesystem datastore adapters are tracked as `S-022`.
 
 ## Immune Log
 

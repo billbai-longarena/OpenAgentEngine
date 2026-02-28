@@ -1,0 +1,14 @@
+id: S-022
+type: HOLE
+title: "Implement non-filesystem external invite store adapter (transactional backend)"
+status: open
+weight: 36
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: unassigned
+module: "apps/gateway"
+tags: [phase-15,invite,consistency,datastore,postgres,redis]
+next: "Introduce adapter interface backed by external transactional datastore (PostgreSQL preferred), then upgrade verify:s021 path from shared filesystem store to true non-filesystem multi-instance consistency."
+touch_count: 0
+source: emergent
