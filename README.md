@@ -45,12 +45,18 @@ Pass criteria:
 - `phase-3-routing` prints `S-007 routing verified...`
 - command exits `0` and ends with `Quality gate passed.`
 
-6. Start local infra baseline (PostgreSQL + Redis + NATS):
+6. CI wiring:
+```text
+.github/workflows/verify-gate.yml
+```
+This workflow runs `pnpm run verify:gate` on `pull_request`, `push` to `main`, and manual dispatch.
+
+7. Start local infra baseline (PostgreSQL + Redis + NATS):
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
-7. Optional workspace commands (after installing deps):
+8. Optional workspace commands (after installing deps):
 ```bash
 pnpm install
 pnpm run lint

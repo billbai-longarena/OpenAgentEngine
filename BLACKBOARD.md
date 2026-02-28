@@ -33,10 +33,11 @@
 | S-006 | HOLE | Implement phase-2 world delta persistence and replay baseline | 66 | 14 | done | codex-heartbeat |
 | S-007 | HOLE | Implement phase-3 multi-world routing and world-scoped WS channels | 64 | 14 | done | codex-heartbeat |
 | S-008 | HOLE | Establish phase-4 build/test quality gate for runtime-gateway-world contracts | 62 | 14 | done | codex-worker-s008 |
+| S-009 | HOLE | Wire verify:gate into CI workflow | 60 | 14 | done | codex-worker-s009 |
 
 ## Hotspot Areas
 
-(none — `S-008` quality gate command is implemented and documented)
+(none — `S-008` quality gate and `S-009` CI wiring are implemented)
 
 ## Notes for AI
 
@@ -44,7 +45,7 @@
 - **Read `CHARTER.md` for project identity and design principles (now 33 principles, C-xxx numbered).**
 - **Read `docs/plans/2026-02-28-worldview-design.md` for the worldview design** — the conceptual shift from "game engine" to "world substrate."
 - **Read `docs/plans/2026-02-28-tech-stack-architecture.md` for v0 stack and system boundary decisions** before scaffolding runtime code.
-- **For S-004/S-005/S-006/S-007/S-008 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase handoff aligned with worldview constraints.
+- **For S-004/S-005/S-006/S-007/S-008/S-009 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase handoff aligned with worldview constraints.
 - **Signal precedence**: if wording in S-002 (founding vision) conflicts with S-003/CHARTER worldview extensions, use S-003 + CHARTER as current authority.
 - Core terminology shift: "Game" → "World", "Player" → "Inhabitant", "Create" → "Inhabit/Shape", "Share" → "Invite", "engineAI" → "AI Presence"
 - The founding vision prioritizes people who love interactive experiences — they inhabit worlds, not "play games."
@@ -55,8 +56,8 @@
 
 ## Known Limitations
 
-- Phase-0 scaffold and phase-1/phase-2/phase-3 baselines are implemented; `S-007` is done and verified.
-- Local quality gate exists as `pnpm run verify:gate`; CI integration of this gate is not established yet.
+- Phase-0 through phase-5 baselines are implemented; `S-009` is done and verified locally.
+- Local and CI quality gate are both wired via `pnpm run verify:gate`; branch protection policy is not enforced in repository settings yet.
 - `termite-db-export.sh` currently exports only schema-mapped fields; extra narrative YAML keys can be dropped if not preserved in DB/docs.
 
 ## Immune Log
