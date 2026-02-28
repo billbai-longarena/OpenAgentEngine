@@ -1,6 +1,9 @@
 # OS
 .DS_Store
 
+# Termite Protocol — runtime backups
+signals.yaml-backup/
+
 # Termite Protocol — ephemeral runtime files
 .birth
 .birth.*
