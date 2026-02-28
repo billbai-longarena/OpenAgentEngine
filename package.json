@@ -13,6 +13,7 @@
     "verify:s005": "node scripts/verify-s005-flow.mjs",
     "verify:s006": "node scripts/verify-s006-replay.mjs",
     "verify:s007": "node scripts/verify-s007-routing.mjs",
+    "verify:s010": "node scripts/verify-s010-ai-presence.mjs",
     "verify:gate": "node scripts/verify-quality-gate.mjs"
   },
   "devDependencies": {
