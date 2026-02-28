@@ -41,11 +41,11 @@
 | S-014 | HOLE | Define branch protection required-check policy and setup runbook | 50 | 14 | done | codex-heartbeat |
 | S-015 | HOLE | Automate branch-protection drift audit against GitHub API | 50 | 14 | done | codex-worker-s015 |
 | S-016 | HOLE | Enforce authenticated branch-protection drift checks in CI | 48 | 14 | done | codex-worker-s016 |
-| S-017 | HOLE | Apply repository secret for S-015 live drift audit and verify first main run | 44 | 14 | open | unassigned |
+| S-017 | HOLE | Apply repository secret for S-015 live drift audit and verify first main run | 44 | 14 | done | codex-worker-s017 |
 
 ## Hotspot Areas
 
-- `S-017` (`HOLE`, w=44, open): repository ops handoff pending (capture first `push` to `main` evidence where `verify:s015` runs in required-live mode).
+- Governance drift-audit closure evidence captured on 2026-02-28: `verify-gate` push run `22528876571` on `main` logged `S-015 ... live_check=aligned mode=required`.
 
 ## Notes for AI
 
@@ -66,8 +66,8 @@
 
 ## Known Limitations
 
-- Phase-0 through phase-11 baselines are implemented; `S-016` is done and verified locally.
-- Branch protection + `BRANCH_PROTECTION_AUDIT_TOKEN` are configured (2026-02-28); first protected `push` to `main` evidence is still required to close `S-017`.
+- Phase-0 through phase-12 baselines are implemented; `S-017` is done and verified with remote CI evidence.
+- Branch protection and drift-audit credentials are configured; continue monitoring `verify:gate` for future context drift.
 - DB export currently preserves key narrative blocks (`signals.vision/description`, `observations.detail`); additional custom fields still require allowlist extension if introduced.
 - Local and CI quality gate are both wired via `pnpm run verify:gate`.
 

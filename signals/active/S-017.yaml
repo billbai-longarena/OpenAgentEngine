@@ -1,14 +1,14 @@
 id: S-017
 type: HOLE
 title: "Apply repository secret for S-015 live drift audit and verify first main run"
-status: open
+status: done
 weight: 44
 ttl_days: 14
 created: 2026-03-01
 last_touched: 2026-03-01
-owner: unassigned
+owner: codex-worker-s017
 module: "repository-settings"
 tags: [phase-12,governance,ops,branch-protection]
-next: "Confirm first push-to-main verify-gate run executes S-015 in required-live mode and record run URL; branch protection + BRANCH_PROTECTION_AUDIT_TOKEN were applied on 2026-02-28."
-touch_count: 1
+next: "Main push evidence captured on 2026-02-28 via run https://github.com/billbai-longarena/OpenAgentEngine/actions/runs/22528876571 showing S-015 live_check=aligned mode=required; continue routine governance monitoring through quality gate."
+touch_count: 3
 source: emergent
