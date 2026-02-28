@@ -52,6 +52,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r apps/ai-presence/requirements.txt
 
+      - name: Initialize termite DB from YAML
+        run: bash scripts/termite-db-migrate.sh
+
       - name: Verify quality gate
         run: pnpm run verify:gate
         env:
