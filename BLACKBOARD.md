@@ -25,9 +25,10 @@
 
 | ID | Type | Title | Weight | TTL | Status | Owner |
 |----|------|-------|--------|-----|--------|-------|
-| S-001 | EXPLORE | Map project structure, establish tech stack | 45 | 14 | open | unassigned |
-| S-002 | PHEROMONE | Founding Vision — project identity and design principles | 86 | 90 | open | unassigned |
-| S-003 | PHEROMONE | Worldview Design — from game engine to world substrate | 90 | 90 | open | unassigned |
+| S-001 | EXPLORE | Map project structure, establish tech stack | 20 | 14 | done | codex-scout-s001 |
+| S-002 | PHEROMONE | Founding Vision — project identity and design principles | 84 | 90 | open | unassigned |
+| S-003 | PHEROMONE | Worldview Design — from game engine to world substrate | 88 | 90 | open | unassigned |
+| S-004 | HOLE | Scaffold phase-0 monorepo and baseline services | 72 | 14 | open | unassigned |
 
 ## Hotspot Areas
 
@@ -51,6 +52,7 @@
 
 - Runtime codebase is not scaffolded yet (planning artifacts exist, executable app services do not).
 - Build/test pipeline for product runtime is not established yet (field scripts only).
+- `termite-db-export.sh` currently exports only schema-mapped fields; extra narrative YAML keys can be dropped if not preserved in DB/docs.
 
 ## Immune Log
 

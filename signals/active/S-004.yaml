@@ -1,0 +1,14 @@
+id: S-004
+type: HOLE
+title: "Scaffold phase-0 monorepo and baseline services from architecture plan"
+status: open
+weight: 72
+ttl_days: 14
+created: 2026-02-28
+last_touched: 2026-02-28
+owner: unassigned
+module: "project-root"
+tags: [implementation,scaffold,phase-0,architecture]
+next: "Bootstrap apps/web, apps/gateway, apps/runtime, apps/ai-presence, shared packages, and infra baseline"
+touch_count: 0
+source: emergent
