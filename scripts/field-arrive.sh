@@ -242,7 +242,10 @@ fi
 if has_db; then
   ph_row=$(db_pheromone_latest 2>/dev/null || true)
   if [ -n "$ph_row" ]; then
-    IFS=$'\t' read -r _ph_agent _ph_ts _ph_caste _ph_branch _ph_commit _ph_completed ph_unresolved ph_pred_useful _ph_wip _ph_sigcount <<< "$ph_row"
+    # Read unresolved/pred_useful as dedicated scalar queries so empty unresolved
+    # cannot be shifted into neighboring columns by whitespace field splitting.
+    ph_unresolved=$(db_exec "SELECT COALESCE(unresolved,'') FROM pheromone_history ORDER BY id DESC LIMIT 1;" 2>/dev/null || true)
+    ph_pred_useful=$(db_exec "SELECT COALESCE(predecessor_useful,'') FROM pheromone_history ORDER BY id DESC LIMIT 1;" 2>/dev/null || true)
     if [ -n "$ph_unresolved" ] && [ "$ph_unresolved" != "null" ] && [ "$ph_unresolved" != "" ] && handoff_is_actionable "$ph_unresolved"; then
       situation="${situation}Handoff: ${ph_unresolved}\n"
     fi
