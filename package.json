@@ -1,0 +1,18 @@
+{
+  "name": "open-agent-engine",
+  "private": true,
+  "version": "0.0.0",
+  "description": "OpenAgentEngine world substrate monorepo scaffold",
+  "packageManager": "pnpm@10.6.1",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "verify:workspace": "node scripts/verify-workspace.mjs",
+    "verify:s005": "node scripts/verify-s005-flow.mjs"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4"
+  }
+}

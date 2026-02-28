@@ -28,11 +28,12 @@
 | S-001 | EXPLORE | Map project structure, establish tech stack | 20 | 14 | done | codex-scout-s001 |
 | S-002 | PHEROMONE | Founding Vision — project identity and design principles | 84 | 90 | open | unassigned |
 | S-003 | PHEROMONE | Worldview Design — from game engine to world substrate | 88 | 90 | open | unassigned |
-| S-004 | HOLE | Scaffold phase-0 monorepo and baseline services | 72 | 14 | open | unassigned |
+| S-004 | HOLE | Scaffold phase-0 monorepo and baseline services | 30 | 14 | done | codex-worker-s004 |
+| S-005 | HOLE | Implement phase-1 runtime loop + WS delta flow | 68 | 14 | done | codex-heartbeat |
 
 ## Hotspot Areas
 
-(none — genesis session)
+(none — phase-1 single-world WS delta baseline validated)
 
 ## Notes for AI
 
@@ -40,6 +41,7 @@
 - **Read `CHARTER.md` for project identity and design principles (now 33 principles, C-xxx numbered).**
 - **Read `docs/plans/2026-02-28-worldview-design.md` for the worldview design** — the conceptual shift from "game engine" to "world substrate."
 - **Read `docs/plans/2026-02-28-tech-stack-architecture.md` for v0 stack and system boundary decisions** before scaffolding runtime code.
+- **For S-004/S-005 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase-0/phase-1 handoff aligned with worldview constraints.
 - **Signal precedence**: if wording in S-002 (founding vision) conflicts with S-003/CHARTER worldview extensions, use S-003 + CHARTER as current authority.
 - Core terminology shift: "Game" → "World", "Player" → "Inhabitant", "Create" → "Inhabit/Shape", "Share" → "Invite", "engineAI" → "AI Presence"
 - The founding vision prioritizes people who love interactive experiences — they inhabit worlds, not "play games."
@@ -50,7 +52,7 @@
 
 ## Known Limitations
 
-- Runtime codebase is not scaffolded yet (planning artifacts exist, executable app services do not).
+- Phase-0 scaffold and phase-1 single-world WS delta baseline are implemented; persistence, replay, and multi-world routing are still pending.
 - Build/test pipeline for product runtime is not established yet (field scripts only).
 - `termite-db-export.sh` currently exports only schema-mapped fields; extra narrative YAML keys can be dropped if not preserved in DB/docs.
 

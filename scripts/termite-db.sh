@@ -226,10 +226,12 @@ db_claim_release() {
   db_transaction "
     DELETE FROM claims WHERE signal_id='$(db_escape "$signal_id")' AND operation='$(db_escape "$op")';
     UPDATE signals SET status=CASE
-      WHEN (SELECT COUNT(*) FROM claims WHERE signal_id='$(db_escape "$signal_id")') = 0 THEN 'open'
+      WHEN (SELECT COUNT(*) FROM claims WHERE signal_id='$(db_escape "$signal_id")') = 0
+        AND status='claimed' THEN 'open'
       ELSE status END,
       owner=CASE
-      WHEN (SELECT COUNT(*) FROM claims WHERE signal_id='$(db_escape "$signal_id")') = 0 THEN 'unassigned'
+      WHEN (SELECT COUNT(*) FROM claims WHERE signal_id='$(db_escape "$signal_id")') = 0
+        AND status='claimed' THEN 'unassigned'
       ELSE owner END
       WHERE id='$(db_escape "$signal_id")';
   "
