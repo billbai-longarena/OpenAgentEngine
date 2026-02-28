@@ -1,8 +1,8 @@
 import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import { randomUUID } from 'node:crypto';
-import { access, appendFile, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { access, appendFile, mkdir, open, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 import { isWorldDelta, type WorldDelta } from '@openagentengine/signal-schema';
 
 const app = Fastify({ logger: true });
@@ -47,6 +47,10 @@ const inviteRedeemLocks = new Map<string, Promise<void>>();
 const worldDeltaLogDir = process.env.WORLD_DELTA_LOG_DIR ?? '.runtime-data/world-delta-log';
 const worldMetadataDir = process.env.WORLD_METADATA_DIR ?? '.runtime-data/world-metadata';
 const defaultWorldId = process.env.DEFAULT_WORLD_ID ?? 'world-0001';
+const inviteRedeemLockDir = process.env.WORLD_INVITE_LOCK_DIR ?? join(worldMetadataDir, 'invite-locks');
+const inviteRedeemLockTimeoutMs = parsePositiveInt(process.env.WORLD_INVITE_LOCK_TIMEOUT_MS, 5000, 60000);
+const inviteRedeemLockStaleMs = parsePositiveInt(process.env.WORLD_INVITE_LOCK_STALE_MS, 30000, 300000);
+const inviteRedeemRaceDelayMs = parsePositiveInt(process.env.WORLD_INVITE_REDEEM_RACE_DELAY_MS, 0, 30000);
 
 app.get('/health', async () => ({ status: 'ok', service: 'gateway' }));
 
@@ -89,6 +93,10 @@ function worldLineagePath(worldId: string): string {
 
 function worldInvitePath(inviteId: string): string {
   return join(worldMetadataDir, 'invites', `${inviteId}.json`);
+}
+
+function inviteRedeemLockPath(inviteId: string): string {
+  return join(inviteRedeemLockDir, `${inviteId}.lock`);
 }
 
 async function fileExists(filePath: string): Promise<boolean> {
@@ -247,6 +255,19 @@ async function persistWorldLineage(lineage: WorldForkLineage): Promise<void> {
   await writeFile(worldLineagePath(lineage.worldId), `${JSON.stringify(lineage, null, 2)}\n`, 'utf8');
 }
 
+async function writeFileAtomic(filePath: string, content: string): Promise<void> {
+  const parentDir = dirname(filePath);
+  await mkdir(parentDir, { recursive: true });
+  const tempPath = join(parentDir, `${randomUUID()}.tmp`);
+  try {
+    await writeFile(tempPath, content, 'utf8');
+    await rename(tempPath, filePath);
+  } catch (error) {
+    await rm(tempPath, { force: true });
+    throw error;
+  }
+}
+
 async function loadWorldInvite(inviteId: string): Promise<WorldInvite | null> {
   let content = '';
   try {
@@ -264,8 +285,7 @@ async function loadWorldInvite(inviteId: string): Promise<WorldInvite | null> {
 }
 
 async function persistWorldInvite(invite: WorldInvite): Promise<void> {
-  await mkdir(join(worldMetadataDir, 'invites'), { recursive: true });
-  await writeFile(worldInvitePath(invite.inviteId), `${JSON.stringify(invite, null, 2)}\n`, 'utf8');
+  await writeFileAtomic(worldInvitePath(invite.inviteId), `${JSON.stringify(invite, null, 2)}\n`);
 }
 
 function isInviteExpired(invite: WorldInvite, nowEpochMs: number): boolean {
@@ -276,6 +296,71 @@ function isInviteExpired(invite: WorldInvite, nowEpochMs: number): boolean {
 
 function remainingInviteRedemptions(invite: WorldInvite): number {
   return Math.max(0, invite.maxRedemptions - invite.redemptionCount);
+}
+
+class InviteRedeemLockTimeoutError extends Error {
+  readonly inviteId: string;
+
+  constructor(inviteId: string) {
+    super(`Timed out waiting for invite lock: ${inviteId}`);
+    this.name = 'InviteRedeemLockTimeoutError';
+    this.inviteId = inviteId;
+  }
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function withDistributedInviteRedeemLock<T>(inviteId: string, action: () => Promise<T>): Promise<T> {
+  await mkdir(inviteRedeemLockDir, { recursive: true });
+  const lockPath = inviteRedeemLockPath(inviteId);
+  const deadline = Date.now() + inviteRedeemLockTimeoutMs;
+
+  while (true) {
+    try {
+      const lockHandle = await open(lockPath, 'wx');
+      try {
+        const lockPayload = {
+          inviteId,
+          pid: process.pid,
+          acquiredAt: new Date().toISOString()
+        };
+        await lockHandle.writeFile(`${JSON.stringify(lockPayload)}\n`, 'utf8');
+      } finally {
+        await lockHandle.close();
+      }
+      break;
+    } catch (error) {
+      const fsError = error as NodeJS.ErrnoException;
+      if (fsError.code !== 'EEXIST') {
+        throw error;
+      }
+
+      try {
+        const lockStats = await stat(lockPath);
+        if (Date.now() - lockStats.mtimeMs > inviteRedeemLockStaleMs) {
+          await rm(lockPath, { force: true });
+          continue;
+        }
+      } catch {
+        // Lock may have been released between checks.
+      }
+
+      if (Date.now() > deadline) {
+        throw new InviteRedeemLockTimeoutError(inviteId);
+      }
+      await delay(25);
+    }
+  }
+
+  try {
+    return await action();
+  } finally {
+    await rm(lockPath, { force: true });
+  }
 }
 
 async function withInviteRedeemLock<T>(inviteId: string, action: () => Promise<T>): Promise<T> {
@@ -289,7 +374,7 @@ async function withInviteRedeemLock<T>(inviteId: string, action: () => Promise<T
   await previous;
 
   try {
-    return await action();
+    return await withDistributedInviteRedeemLock(inviteId, action);
   } finally {
     releaseCurrent();
     if (inviteRedeemLocks.get(inviteId) === tail) {
@@ -616,96 +701,110 @@ app.post<{
   Params: { inviteId: string };
   Body: { forkWorldId?: string };
 }>('/invite/:inviteId/redeem', async (request, reply) => {
-  return withInviteRedeemLock(request.params.inviteId, async () => {
-    const invite = await loadWorldInvite(request.params.inviteId);
-    if (!invite) {
-      return reply.code(404).send({
-        error: 'invite_not_found',
-        message: `Invite ${request.params.inviteId} was not found`
-      });
-    }
-
-    const now = Date.now();
-    if (isInviteExpired(invite, now)) {
-      return reply.code(410).send({
-        error: 'invite_expired',
-        message: `Invite ${invite.inviteId} expired at ${invite.expiresAt}`
-      });
-    }
-
-    if (remainingInviteRedemptions(invite) <= 0) {
-      return reply.code(409).send({
-        error: 'invite_exhausted',
-        message: `Invite ${invite.inviteId} has no remaining redemptions`
-      });
-    }
-
-    const moments = await loadWorldMoments(invite.parentWorldId);
-    const moment = moments.find((candidate) => candidate.momentId === invite.momentId);
-    if (!moment) {
-      return reply.code(409).send({
-        error: 'invite_invalid',
-        message: `Invite ${invite.inviteId} references missing moment ${invite.momentId}`
-      });
-    }
-
-    let worldId = invite.parentWorldId;
-    let inheritedDeltas = 0;
-    let forked = false;
-    if (invite.forkOnRedeem) {
-      const forkWorldId =
-        parseOptionalText(request.body?.forkWorldId) ?? `${invite.parentWorldId}-invite-${Date.now().toString(36)}`;
-      if (forkWorldId === invite.parentWorldId) {
-        return reply.code(400).send({
-          error: 'invalid_request',
-          message: 'forkWorldId must be different from parent world id'
+  try {
+    return await withInviteRedeemLock(request.params.inviteId, async () => {
+      const invite = await loadWorldInvite(request.params.inviteId);
+      if (!invite) {
+        return reply.code(404).send({
+          error: 'invite_not_found',
+          message: `Invite ${request.params.inviteId} was not found`
         });
       }
 
-      if (
-        (await fileExists(worldDeltaLogPath(forkWorldId))) ||
-        (await fileExists(worldLineagePath(forkWorldId)))
-      ) {
+      if (inviteRedeemRaceDelayMs > 0) {
+        await delay(inviteRedeemRaceDelayMs);
+      }
+
+      const now = Date.now();
+      if (isInviteExpired(invite, now)) {
+        return reply.code(410).send({
+          error: 'invite_expired',
+          message: `Invite ${invite.inviteId} expired at ${invite.expiresAt}`
+        });
+      }
+
+      if (remainingInviteRedemptions(invite) <= 0) {
         return reply.code(409).send({
-          error: 'fork_exists',
-          message: `World ${forkWorldId} already exists`
+          error: 'invite_exhausted',
+          message: `Invite ${invite.inviteId} has no remaining redemptions`
         });
       }
 
-      inheritedDeltas = await seedForkWorldFromMoment(invite.parentWorldId, forkWorldId, moment.tick);
-      const lineage: WorldForkLineage = {
-        worldId: forkWorldId,
-        parentWorldId: invite.parentWorldId,
-        fromMomentId: moment.momentId,
-        fromTick: moment.tick,
-        createdAt: new Date(now).toISOString(),
-        seedContext: invite.seedContext,
-        inheritedDeltas
+      const moments = await loadWorldMoments(invite.parentWorldId);
+      const moment = moments.find((candidate) => candidate.momentId === invite.momentId);
+      if (!moment) {
+        return reply.code(409).send({
+          error: 'invite_invalid',
+          message: `Invite ${invite.inviteId} references missing moment ${invite.momentId}`
+        });
+      }
+
+      let worldId = invite.parentWorldId;
+      let inheritedDeltas = 0;
+      let forked = false;
+      if (invite.forkOnRedeem) {
+        const forkWorldId =
+          parseOptionalText(request.body?.forkWorldId) ?? `${invite.parentWorldId}-invite-${Date.now().toString(36)}`;
+        if (forkWorldId === invite.parentWorldId) {
+          return reply.code(400).send({
+            error: 'invalid_request',
+            message: 'forkWorldId must be different from parent world id'
+          });
+        }
+
+        if (
+          (await fileExists(worldDeltaLogPath(forkWorldId))) ||
+          (await fileExists(worldLineagePath(forkWorldId)))
+        ) {
+          return reply.code(409).send({
+            error: 'fork_exists',
+            message: `World ${forkWorldId} already exists`
+          });
+        }
+
+        inheritedDeltas = await seedForkWorldFromMoment(invite.parentWorldId, forkWorldId, moment.tick);
+        const lineage: WorldForkLineage = {
+          worldId: forkWorldId,
+          parentWorldId: invite.parentWorldId,
+          fromMomentId: moment.momentId,
+          fromTick: moment.tick,
+          createdAt: new Date(now).toISOString(),
+          seedContext: invite.seedContext,
+          inheritedDeltas
+        };
+        await persistWorldLineage(lineage);
+        worldId = forkWorldId;
+        forked = true;
+      }
+
+      const updatedInvite: WorldInvite = {
+        ...invite,
+        redemptionCount: invite.redemptionCount + 1,
+        lastRedeemedAt: new Date(now).toISOString()
       };
-      await persistWorldLineage(lineage);
-      worldId = forkWorldId;
-      forked = true;
-    }
+      await persistWorldInvite(updatedInvite);
 
-    const updatedInvite: WorldInvite = {
-      ...invite,
-      redemptionCount: invite.redemptionCount + 1,
-      lastRedeemedAt: new Date(now).toISOString()
-    };
-    await persistWorldInvite(updatedInvite);
-
-    return reply.code(201).send({
-      inviteId: updatedInvite.inviteId,
-      parentWorldId: updatedInvite.parentWorldId,
-      momentId: updatedInvite.momentId,
-      worldId,
-      forked,
-      inheritedDeltas,
-      redemptionCount: updatedInvite.redemptionCount,
-      remainingRedemptions: remainingInviteRedemptions(updatedInvite),
-      expiresAt: updatedInvite.expiresAt
+      return reply.code(201).send({
+        inviteId: updatedInvite.inviteId,
+        parentWorldId: updatedInvite.parentWorldId,
+        momentId: updatedInvite.momentId,
+        worldId,
+        forked,
+        inheritedDeltas,
+        redemptionCount: updatedInvite.redemptionCount,
+        remainingRedemptions: remainingInviteRedemptions(updatedInvite),
+        expiresAt: updatedInvite.expiresAt
+      });
     });
-  });
+  } catch (error) {
+    if (error instanceof InviteRedeemLockTimeoutError) {
+      return reply.code(503).send({
+        error: 'invite_busy',
+        message: `Invite ${error.inviteId} is currently being redeemed; retry shortly`
+      });
+    }
+    throw error;
+  }
 });
 
 app.get<{

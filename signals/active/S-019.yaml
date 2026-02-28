@@ -1,14 +1,14 @@
 id: S-019
 type: HOLE
 title: "Implement shared transactional invite store to guarantee cross-instance redeem atomicity"
-status: open
+status: done
 weight: 46
 ttl_days: 14
 created: 2026-03-01
 last_touched: 2026-03-01
-owner: unassigned
+owner: codex-worker-s019
 module: "apps/gateway"
 tags: [phase-13,invite,consistency,multi-instance]
-next: "Introduce a shared storage adapter with atomic compare-and-swap or DB transaction for redeem count + expiry validation."
-touch_count: 0
+next: "Current lockfile approach requires shared WORLD_METADATA_DIR; next hardening is external transactional store for multi-region deployments."
+touch_count: 2
 source: emergent

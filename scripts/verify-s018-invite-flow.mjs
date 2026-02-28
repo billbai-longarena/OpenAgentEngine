@@ -3,10 +3,12 @@ import { spawn, spawnSync } from 'node:child_process';
 import { rm } from 'node:fs/promises';
 
 const gatewayPort = Number(process.env.S018_GATEWAY_PORT ?? 3108);
+const secondaryGatewayPort = Number(process.env.S019_SECONDARY_GATEWAY_PORT ?? gatewayPort + 1);
 const runId = Date.now().toString(36);
 const parentWorldId = process.env.S018_PARENT_WORLD_ID ?? `world-invite-root-${runId}`;
 const forkWorldId = process.env.S018_FORK_WORLD_ID ?? `world-invite-branch-${runId}`;
 const gatewayBaseUrl = `http://127.0.0.1:${gatewayPort}`;
+const secondaryGatewayBaseUrl = `http://127.0.0.1:${secondaryGatewayPort}`;
 const gatewayRuntimeWsUrl = `ws://127.0.0.1:${gatewayPort}/ws/runtime`;
 const logDir = process.env.S018_DELTA_LOG_DIR ?? '.runtime-data/s018-log';
 const metadataDir = process.env.S018_METADATA_DIR ?? '.runtime-data/s018-meta';
@@ -38,11 +40,11 @@ function runStep(name, args) {
   }
 }
 
-async function waitForGatewayReady(timeoutMs) {
+async function waitForGatewayReady(baseUrl, timeoutMs) {
   const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     try {
-      const response = await fetch(`${gatewayBaseUrl}/health`);
+      const response = await fetch(`${baseUrl}/health`);
       if (response.ok) return;
     } catch {
       // keep polling
@@ -131,6 +133,21 @@ async function redeemInviteResult(inviteId, redeemForkWorldId) {
   return { status: response.status, payload };
 }
 
+async function redeemInviteResultAt(baseUrl, inviteId, redeemForkWorldId) {
+  const response = await fetch(`${baseUrl}/invite/${encodeURIComponent(inviteId)}/redeem`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ forkWorldId: redeemForkWorldId })
+  });
+  let payload = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+  return { status: response.status, payload };
+}
+
 async function verifyConcurrentRedeem(inviteId, forkWorldPrefix) {
   const [left, right] = await Promise.all([
     redeemInviteResult(inviteId, `${forkWorldPrefix}-left`),
@@ -148,6 +165,30 @@ async function verifyConcurrentRedeem(inviteId, forkWorldPrefix) {
   if (exhausted.payload?.error !== 'invite_exhausted') {
     throw new Error(
       `expected concurrent redeem 409 payload error invite_exhausted, got ${exhausted.payload?.error}`
+    );
+  }
+
+  const success = left.status === 201 ? left : right;
+  return success.payload;
+}
+
+async function verifyCrossInstanceConcurrentRedeem(inviteId, forkWorldPrefix) {
+  const [left, right] = await Promise.all([
+    redeemInviteResultAt(gatewayBaseUrl, inviteId, `${forkWorldPrefix}-primary`),
+    redeemInviteResultAt(secondaryGatewayBaseUrl, inviteId, `${forkWorldPrefix}-secondary`)
+  ]);
+
+  const statuses = [left.status, right.status].sort((a, b) => a - b);
+  if (statuses[0] !== 201 || statuses[1] !== 409) {
+    throw new Error(
+      `expected cross-instance concurrent statuses [201,409], got [${left.status},${right.status}]`
+    );
+  }
+
+  const exhausted = left.status === 409 ? left : right;
+  if (exhausted.payload?.error !== 'invite_exhausted') {
+    throw new Error(
+      `expected cross-instance 409 payload error invite_exhausted, got ${exhausted.payload?.error}`
     );
   }
 
@@ -241,7 +282,11 @@ async function main() {
     runStep('build world-model', ['--filter', '@openagentengine/world-model', 'build']);
 
     startProcess('gateway', ['--filter', '@openagentengine/gateway', 'dev']);
-    await waitForGatewayReady(10000);
+    startProcess('gateway-secondary', ['--filter', '@openagentengine/gateway', 'dev'], {
+      GATEWAY_PORT: String(secondaryGatewayPort)
+    });
+    await waitForGatewayReady(gatewayBaseUrl, 10000);
+    await waitForGatewayReady(secondaryGatewayBaseUrl, 10000);
 
     startProcess('runtime-parent', ['--filter', '@openagentengine/runtime', 'dev'], {
       GATEWAY_RUNTIME_WS_URL: gatewayRuntimeWsUrl,
@@ -268,6 +313,18 @@ async function main() {
     );
     const concurrentForkReplayCount = await verifyForkReplay(concurrentRedeemed.worldId);
     const concurrentInviteState = await fetchInvite(concurrentInvite.inviteId);
+    const crossInstanceInvite = await createInvite(parentWorldId, moment.momentId);
+    const crossInstanceRedeemed = await verifyCrossInstanceConcurrentRedeem(
+      crossInstanceInvite.inviteId,
+      `${forkWorldId}-cross-instance`
+    );
+    const crossInstanceLineage = await verifyLineage(
+      crossInstanceRedeemed.worldId,
+      parentWorldId,
+      moment.momentId
+    );
+    const crossInstanceForkReplayCount = await verifyForkReplay(crossInstanceRedeemed.worldId);
+    const crossInstanceInviteState = await fetchInvite(crossInstanceInvite.inviteId);
 
     if (!redeemed?.forked) {
       throw new Error(`expected redeem response to be forked=true, got ${JSON.stringify(redeemed)}`);
@@ -291,11 +348,21 @@ async function main() {
         `concurrent invite canRedeem expected false, got ${concurrentInviteState?.canRedeem}`
       );
     }
+    if (crossInstanceInviteState?.remainingRedemptions !== 0) {
+      throw new Error(
+        `cross-instance invite remaining redemptions mismatch: expected 0, got ${crossInstanceInviteState?.remainingRedemptions}`
+      );
+    }
+    if (crossInstanceInviteState?.canRedeem !== false) {
+      throw new Error(
+        `cross-instance invite canRedeem expected false, got ${crossInstanceInviteState?.canRedeem}`
+      );
+    }
 
     await expectInviteExhausted(invite.inviteId);
 
     console.log(
-      `S-018 invite flow verified: parent_replay=${parentReplay.length} moment_tick=${moment.tick} invite=${invite.inviteId} redeemed_world=${redeemed.worldId} remaining=${inviteState.remainingRedemptions} inherited=${lineage.inheritedDeltas} fork_replay=${forkReplayCount} concurrent_redeemed_world=${concurrentRedeemed.worldId} concurrent_inherited=${concurrentLineage.inheritedDeltas} concurrent_fork_replay=${concurrentForkReplayCount}`
+      `S-018 invite flow verified: parent_replay=${parentReplay.length} moment_tick=${moment.tick} invite=${invite.inviteId} redeemed_world=${redeemed.worldId} remaining=${inviteState.remainingRedemptions} inherited=${lineage.inheritedDeltas} fork_replay=${forkReplayCount} concurrent_redeemed_world=${concurrentRedeemed.worldId} concurrent_inherited=${concurrentLineage.inheritedDeltas} concurrent_fork_replay=${concurrentForkReplayCount} cross_instance_redeemed_world=${crossInstanceRedeemed.worldId} cross_instance_inherited=${crossInstanceLineage.inheritedDeltas} cross_instance_fork_replay=${crossInstanceForkReplayCount}`
     );
   } finally {
     await cleanup();

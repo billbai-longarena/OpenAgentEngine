@@ -43,14 +43,14 @@
 | S-016 | HOLE | Enforce authenticated branch-protection drift checks in CI | 48 | 14 | done | codex-worker-s016 |
 | S-017 | HOLE | Apply repository secret for S-015 live drift audit and verify first main run | 44 | 14 | done | codex-worker-s017 |
 | S-018 | HOLE | Implement invite creation/redeem baseline on top of moment/fork substrate | 42 | 14 | done | codex-worker-s018-hardening |
-| S-019 | HOLE | Implement shared transactional invite store to guarantee cross-instance redeem atomicity | 46 | 14 | open | unassigned |
+| S-019 | HOLE | Implement shared transactional invite store to guarantee cross-instance redeem atomicity | 46 | 14 | done | codex-worker-s019 |
 
 ## Hotspot Areas
 
 - Governance drift-audit closure evidence captured on 2026-02-28: `verify-gate` push run `22528876571` on `main` logged `S-015 ... live_check=aligned mode=required`.
 - Invite baseline closure captured on 2026-03-01: `verify:s018` and `verify:gate` include phase-11 marker `S-018 invite flow verified: ...` validating create/read/redeem/fork lineage path.
 - Invite concurrent redeem hardening closed on 2026-03-01: `/invite/:inviteId/redeem` is serialized per invite id in gateway process and `verify:s018` asserts concurrent statuses `[201,409]` with loser `invite_exhausted`.
-- New follow-up hole `S-019` opened on 2026-03-01 to close cross-instance redeem races by moving invite redemption state to shared transactional storage.
+- Invite cross-instance atomicity closure captured on 2026-03-01: gateway now uses distributed lock files (`WORLD_INVITE_LOCK_DIR`) + atomic invite writes and both `verify:s018` and `verify:s019` assert cross-instance concurrent redeem outcomes `[201,409]`.
 
 ## Notes for AI
 
@@ -71,11 +71,11 @@
 
 ## Known Limitations
 
-- Phase-0 through phase-13 baselines are implemented; `S-018` invite create/redeem flow is done and quality-gated.
+- Phase-0 through invite-consistency baselines are implemented; `S-019` cross-instance invite redeem atomicity is done and quality-gated.
 - Branch protection and drift-audit credentials are configured; continue monitoring `verify:gate` for future context drift.
 - DB export currently preserves key narrative blocks (`signals.vision/description`, `observations.detail`); additional custom fields still require allowlist extension if introduced.
 - Local and CI quality gate are both wired via `pnpm run verify:gate`.
-- Invite redemption persistence is file-based and currently hardened for single-process gateway concurrency; multi-instance deployments still need shared transactional storage for cross-instance atomicity (tracked as `S-019`).
+- Invite transactional guarantees assume gateways share the same `WORLD_METADATA_DIR` lock path; multi-region or isolated storage topologies still require a dedicated external datastore/transaction coordinator.
 
 ## Immune Log
 

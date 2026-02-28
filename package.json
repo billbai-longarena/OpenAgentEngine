@@ -19,6 +19,7 @@
     "verify:s014": "node scripts/verify-s014-governance-runbook.mjs",
     "verify:s015": "node scripts/verify-s015-branch-protection-drift.mjs",
     "verify:s018": "node scripts/verify-s018-invite-flow.mjs",
+    "verify:s019": "node scripts/verify-s019-invite-store.mjs",
     "verify:gate": "node scripts/verify-quality-gate.mjs"
   },
   "devDependencies": {

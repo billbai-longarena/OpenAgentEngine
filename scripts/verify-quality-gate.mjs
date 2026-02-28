@@ -51,6 +51,11 @@ const steps = [
     name: 'phase-11-invite-flow',
     command: ['node', 'scripts/verify-s018-invite-flow.mjs'],
     successMarker: 'S-018 invite flow verified'
+  },
+  {
+    name: 'phase-12-invite-store',
+    command: ['node', 'scripts/verify-s019-invite-store.mjs'],
+    successMarker: 'S-019 invite store verified'
   }
 ];
 
