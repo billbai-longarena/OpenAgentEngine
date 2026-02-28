@@ -45,7 +45,7 @@
 | S-018 | HOLE | Implement invite creation/redeem baseline on top of moment/fork substrate | 42 | 14 | done | codex-worker-s018-hardening |
 | S-019 | HOLE | Implement shared transactional invite store to guarantee cross-instance redeem atomicity | 46 | 14 | done | codex-worker-s019 |
 | S-020 | HOLE | Design external transactional invite store contract for multi-region redeem consistency | 40 | 14 | done | codex-worker-s020-contract |
-| S-021 | HOLE | Implement external transactional invite store adapter for isolated/multi-region gateways | 38 | 14 | open | unassigned |
+| S-021 | HOLE | Implement external transactional invite store adapter for isolated/multi-region gateways | 38 | 14 | done | codex-worker-s021-adapter |
 
 ## Hotspot Areas
 
@@ -54,7 +54,7 @@
 - Invite concurrent redeem hardening closed on 2026-03-01: `/invite/:inviteId/redeem` is serialized per invite id in gateway process and `verify:s018` asserts concurrent statuses `[201,409]` with loser `invite_exhausted`.
 - Invite cross-instance atomicity closure captured on 2026-03-01: gateway now uses distributed lock files (`WORLD_INVITE_LOCK_DIR`) + atomic invite writes and both `verify:s018` and `verify:s019` assert cross-instance concurrent redeem outcomes `[201,409]`.
 - S-020 closure captured on 2026-03-01: external invite-store contract is defined in `docs/plans/2026-03-01-s020-external-invite-store-contract.md` and `verify:s020` validates isolated storage boundary behavior (`[201,404]` with `invite_not_found` on isolated peer).
-- Follow-up `S-021` opened on 2026-03-01 to implement the external transactional adapter and upgrade isolated-root behavior to shared consistency semantics.
+- S-021 closure captured on 2026-03-01: gateway decouples invite persistence via `WORLD_INVITE_STORE_DIR`; `verify:s021` and `verify:gate` phase-15 validate isolated metadata roots with shared invite-store consistency (`[201,409]` with loser `invite_exhausted`).
 
 ## Notes for AI
 
@@ -76,11 +76,11 @@
 
 ## Known Limitations
 
-- Phase-0 through invite-store-contract baselines are implemented; `S-019` cross-instance shared-root atomicity and `S-020` boundary/contract validation are quality-gated.
+- Phase-0 through external-invite-store baselines are implemented; `S-019` shared-root atomicity, `S-020` boundary/contract validation, and `S-021` isolated-metadata shared-store consistency are quality-gated.
 - Branch protection and drift-audit credentials are configured; continue monitoring `verify:gate` for future context drift.
 - DB export currently preserves key narrative blocks (`signals.vision/description`, `observations.detail`); additional custom fields still require allowlist extension if introduced.
 - Local and CI quality gate are both wired via `pnpm run verify:gate`.
-- Isolated or multi-region topologies still need an external transactional invite datastore implementation to replace shared-root assumptions (tracked as `S-021`).
+- Current external adapter is filesystem-backed (`WORLD_INVITE_STORE_DIR` + lock files); true non-filesystem datastore adapters remain future extension work.
 
 ## Immune Log
 

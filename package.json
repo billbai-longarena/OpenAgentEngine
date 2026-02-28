@@ -21,6 +21,7 @@
     "verify:s018": "node scripts/verify-s018-invite-flow.mjs",
     "verify:s019": "node scripts/verify-s019-invite-store.mjs",
     "verify:s020": "node scripts/verify-s020-isolated-storage-boundary.mjs",
+    "verify:s021": "node scripts/verify-s021-external-invite-store.mjs",
     "verify:gate": "node scripts/verify-quality-gate.mjs"
   },
   "devDependencies": {

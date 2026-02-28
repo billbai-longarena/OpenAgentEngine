@@ -47,7 +47,8 @@ const inviteRedeemLocks = new Map<string, Promise<void>>();
 const worldDeltaLogDir = process.env.WORLD_DELTA_LOG_DIR ?? '.runtime-data/world-delta-log';
 const worldMetadataDir = process.env.WORLD_METADATA_DIR ?? '.runtime-data/world-metadata';
 const defaultWorldId = process.env.DEFAULT_WORLD_ID ?? 'world-0001';
-const inviteRedeemLockDir = process.env.WORLD_INVITE_LOCK_DIR ?? join(worldMetadataDir, 'invite-locks');
+const inviteStoreDir = process.env.WORLD_INVITE_STORE_DIR ?? join(worldMetadataDir, 'invites');
+const inviteRedeemLockDir = process.env.WORLD_INVITE_LOCK_DIR ?? join(inviteStoreDir, 'locks');
 const inviteRedeemLockTimeoutMs = parsePositiveInt(process.env.WORLD_INVITE_LOCK_TIMEOUT_MS, 5000, 60000);
 const inviteRedeemLockStaleMs = parsePositiveInt(process.env.WORLD_INVITE_LOCK_STALE_MS, 30000, 300000);
 const inviteRedeemRaceDelayMs = parsePositiveInt(process.env.WORLD_INVITE_REDEEM_RACE_DELAY_MS, 0, 30000);
@@ -92,7 +93,7 @@ function worldLineagePath(worldId: string): string {
 }
 
 function worldInvitePath(inviteId: string): string {
-  return join(worldMetadataDir, 'invites', `${inviteId}.json`);
+  return join(inviteStoreDir, `${inviteId}.json`);
 }
 
 function inviteRedeemLockPath(inviteId: string): string {
