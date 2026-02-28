@@ -1,0 +1,14 @@
+id: S-021
+type: HOLE
+title: "Implement external transactional invite store adapter for isolated/multi-region gateways"
+status: open
+weight: 38
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: unassigned
+module: "apps/gateway"
+tags: [phase-14,invite,consistency,datastore,implementation]
+next: "Implement store adapter selected by S-020 contract and upgrade isolated-root verify path from [201,404] to [201,409]."
+touch_count: 0
+source: emergent

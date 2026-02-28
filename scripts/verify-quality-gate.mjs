@@ -56,6 +56,11 @@ const steps = [
     name: 'phase-12-invite-store',
     command: ['node', 'scripts/verify-s019-invite-store.mjs'],
     successMarker: 'S-019 invite store verified'
+  },
+  {
+    name: 'phase-14-isolated-storage-boundary',
+    command: ['node', 'scripts/verify-s020-isolated-storage-boundary.mjs'],
+    successMarker: 'S-020 isolated-storage boundary verified'
   }
 ];
 
