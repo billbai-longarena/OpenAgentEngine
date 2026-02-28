@@ -45,7 +45,13 @@ node scripts/verify-s011-export-preserve.mjs
 ```
 Pass marker: `S-011 export-preserve verified: signal=... observation=... markers retained`
 
-7. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 + S-010 + S-011 checks):
+7. Verify phase-8 moment crystallization and world fork lineage baseline:
+```bash
+node scripts/verify-s013-moment-fork.mjs
+```
+Pass marker: `S-013 moment/fork verified: parent_replay=... moment_tick=... fork=... inherited=... fork_replay=...`
+
+8. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 checks):
 ```bash
 pnpm run verify:gate
 ```
@@ -57,20 +63,21 @@ Pass criteria:
 - `phase-3-routing` prints `S-007 routing verified...`
 - `phase-4-ai-presence` prints `S-010 ai-presence verified...`
 - `phase-6-export-preserve` prints `S-011 export-preserve verified...`
+- `phase-8-moment-fork` prints `S-013 moment/fork verified...`
 - command exits `0` and ends with `Quality gate passed.`
 
-8. CI wiring:
+9. CI wiring:
 ```text
 .github/workflows/verify-gate.yml
 ```
 This workflow runs `pnpm run verify:gate` on `pull_request`, `push` to `main`, and manual dispatch.
 
-9. Start local infra baseline (PostgreSQL + Redis + NATS):
+10. Start local infra baseline (PostgreSQL + Redis + NATS):
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
-10. Optional workspace commands (after installing deps):
+11. Optional workspace commands (after installing deps):
 ```bash
 pnpm install
 pnpm run lint

@@ -31,6 +31,11 @@ const steps = [
     name: 'phase-6-export-preserve',
     command: ['node', 'scripts/verify-s011-export-preserve.mjs'],
     successMarker: 'S-011 export-preserve verified'
+  },
+  {
+    name: 'phase-8-moment-fork',
+    command: ['node', 'scripts/verify-s013-moment-fork.mjs'],
+    successMarker: 'S-013 moment/fork verified'
   }
 ];
 

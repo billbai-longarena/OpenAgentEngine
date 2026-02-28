@@ -1,14 +1,14 @@
 id: S-013
 type: HOLE
 title: "Implement moment creation and world-fork lineage baseline"
-status: open
+status: done
 weight: 52
 ttl_days: 14
 created: 2026-03-01
 last_touched: 2026-03-01
-owner: unassigned
+owner: codex-worker-s013
 module: "apps/gateway"
 tags: [phase-8,moment,fork,lineage]
-next: "Add minimal moment API + world fork endpoint and persist fork lineage metadata with replay compatibility"
-touch_count: 0
+next: "Use moment/fork baseline as substrate for invite/share flows; track governance hardening in S-014"
+touch_count: 2
 source: emergent

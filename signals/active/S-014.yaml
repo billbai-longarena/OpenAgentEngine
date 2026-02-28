@@ -1,0 +1,14 @@
+id: S-014
+type: HOLE
+title: "Define branch protection required-check policy and setup runbook"
+status: open
+weight: 50
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: unassigned
+module: "project-root"
+tags: [phase-9,governance,ci,policy]
+next: "Document required status checks (verify:gate) and branch protection settings so repository governance matches quality gate expectations"
+touch_count: 0
+source: emergent
