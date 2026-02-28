@@ -280,7 +280,7 @@ function remainingInviteRedemptions(invite: WorldInvite): number {
 
 async function withInviteRedeemLock<T>(inviteId: string, action: () => Promise<T>): Promise<T> {
   const previous = inviteRedeemLocks.get(inviteId) ?? Promise.resolve();
-  let releaseCurrent: (() => void) | null = null;
+  let releaseCurrent: () => void = () => {};
   const current = new Promise<void>((resolve) => {
     releaseCurrent = resolve;
   });
@@ -291,7 +291,7 @@ async function withInviteRedeemLock<T>(inviteId: string, action: () => Promise<T
   try {
     return await action();
   } finally {
-    releaseCurrent?.();
+    releaseCurrent();
     if (inviteRedeemLocks.get(inviteId) === tail) {
       inviteRedeemLocks.delete(inviteId);
     }
