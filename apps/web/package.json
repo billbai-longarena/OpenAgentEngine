@@ -1,0 +1,16 @@
+{
+  "name": "@openagentengine/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "echo 'web lint placeholder'",
+    "test": "echo 'web test placeholder'"
+  },
+  "dependencies": {
+    "next": "15.2.2",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  }
+}

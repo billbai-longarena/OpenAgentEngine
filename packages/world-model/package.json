@@ -1,0 +1,19 @@
+{
+  "name": "@openagentengine/world-model",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "echo 'world-model lint placeholder'",
+    "test": "echo 'world-model test placeholder'"
+  },
+  "dependencies": {
+    "@openagentengine/signal-schema": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

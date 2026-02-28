@@ -1,0 +1,14 @@
+id: S-006
+type: HOLE
+title: "Implement phase-2 world delta persistence and replay baseline"
+status: done
+weight: 66
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-heartbeat
+module: "apps/runtime"
+tags: [phase-2,persistence,replay,timeline]
+next: "Persist world.delta events and expose replay path for one world timeline"
+touch_count: 1
+source: emergent

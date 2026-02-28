@@ -50,6 +50,7 @@
 | 遇到什么 | 读哪里 |
 |----------|--------|
 | **项目宪章 / 设计原则** | **`CHARTER.md`** |
+| **世界观设计 / 概念架构** | **`docs/plans/2026-02-28-worldview-design.md`** |
 | 种姓疑问 | `TERMITE_PROTOCOL.md` Part III |
 | 信号格式 | `signals/README.md` |
 | 并发冲突 | `TERMITE_PROTOCOL.md` Part II §4.5 |
@@ -60,28 +61,24 @@
 
 ## 项目概述 / 宪章灵魂
 
-OpenAgentEngine — 让不懂技术的游戏爱好者通过自然语言创造和改造游戏。
+OpenAgentEngine — 世界基底（World Substrate）。让人类和 AI 在持续演化的世界中共同居住、塑形、共鸣、邀请。
 
-- **我们不是传统游戏引擎**（C-002）。用户是有品味的玩家，不是开发者（C-030）。
-- **三丘**：开发丘 = AI白蚁+人类开发者 → 产品丘 = engineAI（运行时AI）→ 客户丘 = 游戏爱好者。
-- **交互分治**：高频操作用按钮，创意工作用自然语言对话（C-101）。
-- **AI 是一等公民**：白蚁是一等开发者（C-200），engineAI 是协作者不是工具（C-021）。
-- **做设计决策时 → 读 `CHARTER.md`**（23 条编号原则，完整的身份和设计指导）。
+- **我们不是传统游戏引擎**（C-002）。基本单元是"世界"而非"游戏"（C-005）。
+- **三丘**：开发丘 = AI白蚁+人类开发者 → 产品丘 = AI Presence（世界中的流动智能）→ 客户丘 = 世界的居民。
+- **核心循环**：居住 → 塑形 → 共鸣 → 邀请（无模式切换）（C-033）。
+- **AI 是流动的存在**：在不同时刻呈现不同面向——物理/对话者/工匠/策展人（C-305）。有审美判断（C-306）。
+- **三丘同构**：同一个信号驱动的自适应模式在每个尺度运行（C-400）。
+- **做设计决策时 → 读 `CHARTER.md`**（33 条编号原则）+ **`docs/plans/2026-02-28-worldview-design.md`**（世界观设计）。
 
 ## 技术栈
 
-<!-- 在此填写你的技术栈 -->
-<!-- 例如：
-- **前端**: React / Vue / Next.js + TypeScript
-- **后端**: Node.js / Python / Go
-- **数据库**: PostgreSQL / MySQL / MongoDB
-- **其他**: Redis, Docker, etc.
--->
+- 方案文档：`docs/plans/2026-02-28-tech-stack-architecture.md`
+- v0 基线：TypeScript-first monorepo（Node.js）+ Python AI Presence service
+- 关键基础设施：PostgreSQL + Redis + 事件总线（NATS 或 Redis Streams）
 
 ## 场基础设施 / Field Infrastructure
 
-<!-- 如果你的项目配置了场基础设施，取消注释并填写实际路径 -->
-<!-- | 工具 | 作用 |
+| 工具 | 作用 |
 |------|------|
 | `scripts/field-arrive.sh` | 到达仪式 — 注入 .birth、感受场脉搏 |
 | `scripts/field-cycle.sh` | 完整呼吸 — 衰减→排水→脉搏（post-commit hook） |
@@ -91,37 +88,38 @@ OpenAgentEngine — 让不懂技术的游戏爱好者通过自然语言创造和
 | `signals/rules/*.yaml` | 触发-动作规则（由 field-arrive 注入 .birth） |
 | `signals/active/*.yaml` | 活跃信号数据 |
 | `.pheromone` | 大模型间的化学痕迹（JSON） |
-| `.birth` | 本次会话的出生证明（由 arrive 生成） | -->
+| `.birth` | 本次会话的出生证明（由 arrive 生成） |
 
 ## 路由表：任务 → 局部黑板
 
 <!-- 根据项目模块填写路由表 -->
 | 任务关键词 | 局部黑板 |
 | ---------- | -------- |
-<!-- | 模块 A 相关关键词 | `path/to/module-a/BLACKBOARD.md` | -->
-<!-- | 模块 B 相关关键词 | `path/to/module-b/BLACKBOARD.md` | -->
+| 协议/信号/认领/沉积 | `BLACKBOARD.md` |
+| 宪章/世界观/架构决策 | `BLACKBOARD.md` |
+| 技术栈与系统架构规划 | `BLACKBOARD.md` |
 
 ## 验证清单
 
-<!-- 根据项目实际的构建/测试命令填写 -->
-<!-- | 改动类型 | 验证方式 |
+| 改动类型 | 验证方式 |
 | -------- | -------- |
-| 后端代码 | `cd backend && npm run build` 无报错 |
-| 前端代码 | `cd frontend && npm run build` 无报错 | -->
+| 协议/入口文档 | `rg "termite-kernel:v10.0" AGENTS.md CLAUDE.md TERMITE_PROTOCOL.md` 命中 |
+| 场脚本改动 | `./scripts/field-arrive.sh` 退出码为 0 |
+| 信号协作改动 | `./scripts/field-claim.sh list` 与 claim/release 无冲突 |
 
 ## Build / Test / Dev Commands
 
-<!-- 根据项目实际情况填写 -->
-<!-- | 操作 | 命令 |
+| 操作 | 命令 |
 | ---- | ---- |
-| 安装依赖 | `npm install` |
-| 开发运行 | `npm run dev` |
-| 构建 | `npm run build` |
-| 测试 | `npm run test` | -->
+| 到达（生成 `.birth`） | `./scripts/field-arrive.sh` |
+| 完整呼吸（衰减/排水/脉搏） | `./scripts/field-cycle.sh` |
+| 认领状态查看 | `./scripts/field-claim.sh list` |
+| 审计包导出 | `./scripts/field-export-audit.sh <out-dir>` |
 
 ## Configuration & Secrets
 
-<!-- 在此说明环境变量和配置文件结构，不要包含实际密钥值 -->
+- 协议阈值支持 `TERMITE_*` 环境变量覆盖（详见 `TERMITE_PROTOCOL.md` Part II）。
+- 当前仓库尚未引入产品运行时密钥；后续应用层密钥应使用 `.env.local` 或部署平台密钥管理，禁止入库。
 
 <!-- ### 分支治理 — 三分支流水线
 

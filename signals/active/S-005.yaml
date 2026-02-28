@@ -1,0 +1,14 @@
+id: S-005
+type: HOLE
+title: "Implement phase-1 single-world runtime loop with gateway WS delta flow"
+status: done
+weight: 68
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-heartbeat
+module: "apps/runtime"
+tags: [phase-1,runtime,gateway,websocket,signal-flow]
+next: "Wire runtime tick/delta emission to gateway WS channel and validate end-to-end local flow"
+touch_count: 1
+source: emergent

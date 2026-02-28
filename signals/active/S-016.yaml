@@ -1,0 +1,14 @@
+id: S-016
+type: HOLE
+title: "Enforce authenticated branch-protection drift checks in CI"
+status: done
+weight: 48
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-worker-s016
+module: ".github/workflows"
+tags: [phase-11,governance,ci,branch-protection]
+next: "Configure BRANCH_PROTECTION_AUDIT_TOKEN in repository secrets and verify first push-to-main run observes non-skip live audit (tracked by S-017)"
+touch_count: 2
+source: emergent

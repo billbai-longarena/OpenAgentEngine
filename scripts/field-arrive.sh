@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # field-arrive.sh — Core arrival script: generates .birth
-# This is the most critical file in the Termite Protocol v3.0.
+# This is the most critical file in the Termite Protocol v10.0.
 # It replaces the need for agents to read TERMITE_PROTOCOL.md directly.
 #
 # Logic:
@@ -60,8 +60,8 @@ if has_db; then
   wip=$(db_colony_get "wip" 2>/dev/null || echo "absent")
   build=$(db_colony_get "build" 2>/dev/null || echo "unknown")
   sig_ratio=$(db_colony_get "signature_ratio" 2>/dev/null || echo "0.00")
-  active_signals=$(db_signal_count "status NOT IN ('archived','parked')" 2>/dev/null || echo "0")
-  high_holes=$(db_signal_count "type='HOLE' AND weight>=${ESCALATE_THRESHOLD} AND status!='parked'" 2>/dev/null || echo "0")
+  active_signals=$(db_signal_count "status NOT IN ('archived','parked','done')" 2>/dev/null || echo "0")
+  high_holes=$(db_signal_count "type='HOLE' AND weight>=${ESCALATE_THRESHOLD} AND status NOT IN ('archived','parked','done')" 2>/dev/null || echo "0")
   parked_signals=$(db_signal_count "status='parked'" 2>/dev/null || echo "0")
   branch=$(db_colony_get "branch" 2>/dev/null || current_branch)
   # Fill missing colony state via direct sensing
@@ -227,7 +227,7 @@ fi
 
 # Top signals
 if has_db; then
-  top_signals=$(db_signal_by_weight 3 "status NOT IN ('archived','parked')" | while IFS=$'\t' read -r sid stype stitle sstatus sw sowner; do
+  top_signals=$(db_signal_by_weight 3 "status NOT IN ('archived','parked','done')" | while IFS=$'\t' read -r sid stype stitle sstatus sw sowner; do
     echo -n "${sid}(w:${sw} ${stype}) "
   done)
   if [ -n "$top_signals" ]; then

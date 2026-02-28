@@ -1,0 +1,9 @@
+id: O-20260301041214-40582
+pattern: "S-016 raised for authenticated CI enforcement of drift audit"
+context: "Post-S-015 governance continuation"
+reporter: "termite:2026-03-01:worker"
+confidence: high
+created: 2026-03-01
+source: autonomous
+detail: |
+  Created S-016 to ensure verify:s015 executes in trusted CI with repository credentials so live branch-protection drift checks cannot pass via skip mode.

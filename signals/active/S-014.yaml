@@ -1,0 +1,14 @@
+id: S-014
+type: HOLE
+title: "Define branch protection required-check policy and setup runbook"
+status: done
+weight: 50
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-heartbeat
+module: "project-root"
+tags: [phase-9,governance,ci,policy]
+next: "Apply runbook in repository settings and keep branch-protection policy files aligned with actual required check contexts"
+touch_count: 1
+source: emergent

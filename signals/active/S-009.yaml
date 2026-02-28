@@ -1,0 +1,14 @@
+id: S-009
+type: HOLE
+title: "Wire verify:gate into CI workflow"
+status: done
+weight: 60
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-worker-s009
+module: "project-root"
+tags: [phase-5,ci,quality,verification]
+next: "Keep CI gate green and extend verify:gate when new phase contracts are added"
+touch_count: 1
+source: emergent

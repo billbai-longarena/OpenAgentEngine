@@ -1,0 +1,26 @@
+{
+  "name": "open-agent-engine",
+  "private": true,
+  "version": "0.0.0",
+  "description": "OpenAgentEngine world substrate monorepo scaffold",
+  "packageManager": "pnpm@10.6.1",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "verify:workspace": "node scripts/verify-workspace.mjs",
+    "verify:s005": "node scripts/verify-s005-flow.mjs",
+    "verify:s006": "node scripts/verify-s006-replay.mjs",
+    "verify:s007": "node scripts/verify-s007-routing.mjs",
+    "verify:s010": "node scripts/verify-s010-ai-presence.mjs",
+    "verify:s011": "node scripts/verify-s011-export-preserve.mjs",
+    "verify:s013": "node scripts/verify-s013-moment-fork.mjs",
+    "verify:s014": "node scripts/verify-s014-governance-runbook.mjs",
+    "verify:s015": "node scripts/verify-s015-branch-protection-drift.mjs",
+    "verify:gate": "node scripts/verify-quality-gate.mjs"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4"
+  }
+}

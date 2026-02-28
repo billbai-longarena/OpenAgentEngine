@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# termite-db.sh — SQLite abstraction layer for Termite Protocol v3.4
+# termite-db.sh — SQLite abstraction layer for Termite Protocol v10.0
 # Source this file after field-lib.sh. Provides atomic DB operations.
 # All shared state goes through these functions — no direct YAML writes needed.
 
@@ -226,10 +226,12 @@ db_claim_release() {
   db_transaction "
     DELETE FROM claims WHERE signal_id='$(db_escape "$signal_id")' AND operation='$(db_escape "$op")';
     UPDATE signals SET status=CASE
-      WHEN (SELECT COUNT(*) FROM claims WHERE signal_id='$(db_escape "$signal_id")') = 0 THEN 'open'
+      WHEN (SELECT COUNT(*) FROM claims WHERE signal_id='$(db_escape "$signal_id")') = 0
+        AND status='claimed' THEN 'open'
       ELSE status END,
       owner=CASE
-      WHEN (SELECT COUNT(*) FROM claims WHERE signal_id='$(db_escape "$signal_id")') = 0 THEN 'unassigned'
+      WHEN (SELECT COUNT(*) FROM claims WHERE signal_id='$(db_escape "$signal_id")') = 0
+        AND status='claimed' THEN 'unassigned'
       ELSE owner END
       WHERE id='$(db_escape "$signal_id")';
   "
@@ -494,7 +496,10 @@ confidence: ${confidence}
 created: ${created}
 source: ${source}
 EOF
-    [ -n "$detail" ] && { echo "detail: |"; echo "$detail" | sed 's/^/  /'; } >> "${out_dir}/${id}.yaml"
+    detail_minified=$(printf '%s' "$detail" | tr -d '[:space:]')
+    if [ -n "$detail_minified" ] && [ "$detail_minified" != "|" ]; then
+      { echo "detail: |"; echo "$detail" | sed 's/^/  /'; } >> "${out_dir}/${id}.yaml"
+    fi
     [ "${merged_count:-0}" -gt 0 ] && echo "merged_count: ${merged_count}" >> "${out_dir}/${id}.yaml"
     [ -n "$merged_from" ] && echo "merged_from: ${merged_from}" >> "${out_dir}/${id}.yaml"
   done <<< "$rows"

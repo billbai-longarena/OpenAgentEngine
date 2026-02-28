@@ -1,0 +1,16 @@
+{
+  "name": "@openagentengine/protocol-kernel",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "echo 'protocol-kernel lint placeholder'",
+    "test": "echo 'protocol-kernel test placeholder'"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

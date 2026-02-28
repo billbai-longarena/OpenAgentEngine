@@ -1,0 +1,14 @@
+id: S-015
+type: HOLE
+title: "Automate branch-protection drift audit against GitHub API"
+status: done
+weight: 50
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-worker-s015
+module: "scripts"
+tags: [phase-10,governance,branch-protection,automation]
+next: "Enable authenticated verify:s015 execution in CI so live drift checks are enforced without skip paths (tracked by S-016)"
+touch_count: 2
+source: emergent

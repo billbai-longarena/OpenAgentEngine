@@ -1,0 +1,9 @@
+{
+  "name": "@openagentengine/ai-presence",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "echo 'ai-presence lint placeholder'",
+    "test": "echo 'ai-presence test placeholder'"
+  }
+}

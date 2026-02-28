@@ -1,0 +1,14 @@
+id: S-010
+type: HOLE
+title: "Implement AI Presence continuous world-signal subscription baseline"
+status: done
+weight: 58
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-heartbeat
+module: "apps/ai-presence"
+tags: [phase-6,ai-presence,stream,runtime]
+next: "AI Presence now continuously subscribes to world.delta; extend to multi-world role policy and CI coverage in next phase"
+touch_count: 1
+source: emergent

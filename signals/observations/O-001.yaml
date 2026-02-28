@@ -4,6 +4,7 @@ context: "TERMITE_PROTOCOL.md — information architecture"
 reporter: "termite:2026-02-28:scout"
 confidence: high
 created: 2026-02-28
+source: autonomous
 detail: |
   The protocol defines three information layers:
   - Protocol layer (P0, immutable): HOW to collaborate
@@ -22,4 +23,3 @@ detail: |
   Recommendation: Projects should have a P1-protected CHARTER.md (or equivalent)
   that instantiates the three-mound model, defines design principles, and serves
   as the permanent identity anchor. The protocol should suggest this convention.
-source: autonomous

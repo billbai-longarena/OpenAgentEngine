@@ -1,15 +1,16 @@
-<!-- termite-protocol:v3.4 -->
-# 白蚁协议 v3.4 (Termite Protocol)
+<!-- termite-protocol:v10.0 -->
+# 白蚁协议 v10.0 (Termite Protocol)
 
 白蚁协议的目的，是让多个不同水平的 Agent 同时工作，工作的目的是让三丘模型中提到的开发、产品和客户能共同成功、共同成长。成为各自最好的自己，也能共同达成非凡的成就。
 
 > **本文件是通用的 AI Agent 协作协议。**
+> v10.0 内核统一：入口文件（AGENTS/CLAUDE）与附录 F 使用同一心跳内核（9 条语法规则 + 4 条安全网）。
 > v3.0 架构变更：协议从"Agent 直接阅读的文档"转变为"人类参考 + 脚本配置源"。
 > `field-arrive.sh` 从环境中计算出 `.birth` 文件（≤800 tokens），Agent 只需读取 `.birth` 即可开始工作。
 > 本协议文件为人类提供完整参考，为场脚本提供可解析的配置数据。
 
 ```
-v3.0 信息流：
+v10.0 信息流（继承 v3.0 架构）：
   TERMITE_PROTOCOL.md ──(脚本解析配置)──▶ field-arrive.sh ──(环境感知+计算)──▶ .birth (≤800 tokens)
                                                                                     ▲
   人类参考 ◀── TERMITE_PROTOCOL.md                                           Agent 只读这个
@@ -245,7 +246,7 @@ boundary_touch_threshold: 3     # signal touch count before parking (BLOCKED/HOL
 
 ## 并发架构 (Concurrency Architecture)
 
-> v3.4 起，协议使用 SQLite (WAL 模式) 作为共享状态的单一事实源。
+> v3.4 引入 SQLite (WAL 模式) 作为共享状态的单一事实源，v10.0 延续为默认运行模式。
 > YAML 文件保留为导出格式（审计包、人类阅读），不再是运行时主存储。
 
 ### 存储层
@@ -273,7 +274,7 @@ Per-agent `.birth.{agent_id}` 文件支持多 Agent 同时运行。
 | SQLite 可用 + DB 存在 | 正常 DB 模式 |
 | SQLite 可用 + 无 DB + 有 YAML | 自动迁移 → DB 模式 |
 | SQLite 可用 + 无 DB + 无 YAML | 创建新 DB |
-| SQLite 不可用 | YAML 文件模式（v3.3 行为） |
+| SQLite 不可用 | YAML 文件模式（兼容 v3.3 行为） |
 
 ### 运行时文件
 
@@ -1007,7 +1008,7 @@ git worktree remove ../<project>-<feature>
 > 入口文件的心跳内核也从此处派生。
 
 ```
-# termite-kernel:v3.4
+# termite-kernel:v10.0
 # 白蚁协议 — 最小内核（9 语法规则 + 4 安全网）
 
 [语法]
@@ -1019,7 +1020,7 @@ git worktree remove ../<project>-<feature>
 6. w>threshold→ESCALATE         高权重信号升级告警
 7. count(agents,signal)≥3→EMERGE 3+观察→涌现规则
 8. context>80%→MOLT             上下文满→蜕皮交接
-9. DO(gen_agent)→SEED           生成Agent→注入协议种子
+9. DO(generate_agent)→SEED      生成Agent→注入协议种子
 
 [安全网]
 S1. commit message 说清楚改了什么、为什么改
