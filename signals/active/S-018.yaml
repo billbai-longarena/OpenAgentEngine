@@ -1,0 +1,14 @@
+id: S-018
+type: HOLE
+title: "Implement invite creation/redeem baseline on top of moment/fork substrate"
+status: done
+weight: 42
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-worker-s018
+module: "apps/gateway"
+tags: [phase-13,invite,share,moment,fork]
+next: "Invite baseline is live; next step is hardening concurrent redeem consistency and optional invite landing/join UX integration."
+touch_count: 3
+source: emergent

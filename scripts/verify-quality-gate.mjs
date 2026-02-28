@@ -46,6 +46,11 @@ const steps = [
     name: 'phase-10-governance-drift-audit',
     command: ['node', 'scripts/verify-s015-branch-protection-drift.mjs'],
     successMarker: 'S-015 branch-protection drift verified'
+  },
+  {
+    name: 'phase-11-invite-flow',
+    command: ['node', 'scripts/verify-s018-invite-flow.mjs'],
+    successMarker: 'S-018 invite flow verified'
   }
 ];
 
