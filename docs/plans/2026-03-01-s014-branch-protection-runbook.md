@@ -103,3 +103,4 @@ Behavior:
 
 - If secret is missing on `push` to `main`, `verify:gate` fails by design.
 - If secret is present but permissions are insufficient, `verify:gate` fails and prints API status/body summary.
+- You can preflight this path via `workflow_dispatch` by setting input `require_live_branch_protection_audit=true`.

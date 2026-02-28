@@ -94,6 +94,7 @@ Pass criteria:
 .github/workflows/verify-gate.yml
 ```
 This workflow runs `pnpm run verify:gate` on `pull_request`, `push` to `main`, and manual dispatch.
+Manual dispatch supports input `require_live_branch_protection_audit=true` to force required-live S-015 audit in CI.
 
 12. Start local infra baseline (PostgreSQL + Redis + NATS):
 ```bash
