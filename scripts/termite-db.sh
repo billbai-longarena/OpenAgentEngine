@@ -496,7 +496,10 @@ confidence: ${confidence}
 created: ${created}
 source: ${source}
 EOF
-    [ -n "$detail" ] && { echo "detail: |"; echo "$detail" | sed 's/^/  /'; } >> "${out_dir}/${id}.yaml"
+    detail_minified=$(printf '%s' "$detail" | tr -d '[:space:]')
+    if [ -n "$detail_minified" ] && [ "$detail_minified" != "|" ]; then
+      { echo "detail: |"; echo "$detail" | sed 's/^/  /'; } >> "${out_dir}/${id}.yaml"
+    fi
     [ "${merged_count:-0}" -gt 0 ] && echo "merged_count: ${merged_count}" >> "${out_dir}/${id}.yaml"
     [ -n "$merged_from" ] && echo "merged_from: ${merged_from}" >> "${out_dir}/${id}.yaml"
   done <<< "$rows"

@@ -1,0 +1,14 @@
+id: S-011
+type: HOLE
+title: "Preserve narrative YAML fields during DB export"
+status: done
+weight: 56
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-worker-s011
+module: "scripts"
+tags: [phase-6,export,yaml,narrative]
+next: "Maintain preserved-key allowlist as narrative schema evolves; keep DB as source of truth while protecting human-authored context"
+touch_count: 1
+source: emergent

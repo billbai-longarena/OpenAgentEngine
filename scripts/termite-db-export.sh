@@ -40,6 +40,61 @@ if [ ! -f "$TERMITE_DB" ]; then
   exit 1
 fi
 
+extract_yaml_block() {
+  # Args: file key
+  # Prints a top-level YAML key block (including multiline | blocks), if found.
+  local file="$1" key="$2"
+  awk -v key="$key" '
+    BEGIN { capture = 0 }
+    {
+      if ($0 ~ "^" key ":[[:space:]]*") {
+        capture = 1
+        print
+        next
+      }
+      if (capture) {
+        if ($0 ~ "^[A-Za-z0-9_]+:[[:space:]]*") {
+          exit
+        }
+        print
+      }
+    }
+  ' "$file"
+}
+
+preserve_yaml_block_if_missing() {
+  # Args: previous_file output_file key
+  # Returns 0 when key block is appended, 1 otherwise.
+  local previous_file="$1" output_file="$2" key="$3"
+  [ -f "$previous_file" ] || return 1
+  [ -f "$output_file" ] || return 1
+
+  if grep -Eq "^${key}:[[:space:]]*" "$output_file"; then
+    return 1
+  fi
+
+  local block
+  block="$(extract_yaml_block "$previous_file" "$key")"
+  [ -n "$block" ] || return 1
+
+  printf '\n%s\n' "$block" >> "$output_file"
+  return 0
+}
+
+previous_snapshot_dir="$(mktemp -d)"
+cleanup() {
+  rm -rf "$previous_snapshot_dir"
+}
+trap cleanup EXIT
+
+mkdir -p "${previous_snapshot_dir}/signals/active" "${previous_snapshot_dir}/signals/observations"
+if [ -d "${OUT_DIR}/signals/active" ]; then
+  cp -R "${OUT_DIR}/signals/active/." "${previous_snapshot_dir}/signals/active/" 2>/dev/null || true
+fi
+if [ -d "${OUT_DIR}/signals/observations" ]; then
+  cp -R "${OUT_DIR}/signals/observations/." "${previous_snapshot_dir}/signals/observations/" 2>/dev/null || true
+fi
+
 log_info "=== DB→YAML export starting ==="
 log_info "Output: ${OUT_DIR}"
 
@@ -47,15 +102,36 @@ log_info "Output: ${OUT_DIR}"
 
 signals_dir="${OUT_DIR}/signals/active"
 db_export_signals_dir "$signals_dir"
+preserved_signal_blocks=0
+for exported in "${signals_dir}"/*.yaml; do
+  [ -f "$exported" ] || continue
+  previous="${previous_snapshot_dir}/signals/active/$(basename "$exported")"
+  if preserve_yaml_block_if_missing "$previous" "$exported" "vision"; then
+    preserved_signal_blocks=$((preserved_signal_blocks + 1))
+  fi
+  if preserve_yaml_block_if_missing "$previous" "$exported" "description"; then
+    preserved_signal_blocks=$((preserved_signal_blocks + 1))
+  fi
+done
 sig_count=$(db_signal_count "status != 'archived'" 2>/dev/null || echo "0")
 log_info "Exported ${sig_count} signals to ${signals_dir}"
+[ "${preserved_signal_blocks}" -gt 0 ] && log_info "Preserved ${preserved_signal_blocks} signal narrative block(s) from existing YAML"
 
 # ── Export Observations ──────────────────────────────────────────────
 
 obs_dir="${OUT_DIR}/signals/observations"
 db_export_obs_dir "$obs_dir"
+preserved_obs_blocks=0
+for exported in "${obs_dir}"/*.yaml; do
+  [ -f "$exported" ] || continue
+  previous="${previous_snapshot_dir}/signals/observations/$(basename "$exported")"
+  if preserve_yaml_block_if_missing "$previous" "$exported" "detail"; then
+    preserved_obs_blocks=$((preserved_obs_blocks + 1))
+  fi
+done
 obs_count=$(db_obs_count 2>/dev/null || echo "0")
 log_info "Exported ${obs_count} observations to ${obs_dir}"
+[ "${preserved_obs_blocks}" -gt 0 ] && log_info "Preserved ${preserved_obs_blocks} observation detail block(s) from existing YAML"
 
 # ── Export Rules ─────────────────────────────────────────────────────
 
