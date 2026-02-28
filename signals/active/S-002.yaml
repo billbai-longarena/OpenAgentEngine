@@ -1,0 +1,39 @@
+id: S-002
+type: PHEROMONE
+title: "Founding Vision — OpenAgentEngine identity and design principles"
+status: open
+weight: 90
+ttl_days: 90
+created: 2026-02-28
+last_touched: 2026-02-28
+owner: unassigned
+module: "project-root"
+tags: [genesis, vision, founding, directive]
+next: "Reference this signal for all architectural and design decisions"
+touch_count: 0
+source: directive
+vision: |
+  OpenAgentEngine is an open-source game engine for AI agents and human game
+  lovers to collaborate. It redefines what a "game engine" means — do not be
+  constrained by traditional game engine concepts.
+
+  TARGET USERS:
+  - Game enthusiasts who love playing games
+  - People who may not know how to code or develop games
+  - People with taste, who enjoy experimenting with new gameplay
+  - People who want to modify games to their liking and share with others
+
+  CORE MECHANISM:
+  - Built-in AI agent called "engineAI"
+  - Human users communicate with engineAI via natural language
+  - Natural language drives game modifications, new gameplay creation, etc.
+
+  UX PRINCIPLES:
+  - High-frequency actions (start, debug, etc.) → buttons for intuitive interaction
+  - Creative/modification work → natural language conversation with engineAI
+  - This is an evolving principle — optimize continuously as the software develops
+
+  IDENTITY:
+  - Open source
+  - AI-human collaborative
+  - Creativity-first, code-optional for end users

@@ -1,0 +1,14 @@
+id: S-001
+type: EXPLORE
+title: "Map project structure, establish tech stack and architecture"
+status: open
+weight: 35
+ttl_days: 14
+created: 2026-02-28
+last_touched: 2026-02-28
+owner: unassigned
+module: "project-root"
+tags: [genesis, explore, architecture]
+next: "Determine tech stack, project structure, and initial architecture for the game engine"
+touch_count: 0
+source: autonomous

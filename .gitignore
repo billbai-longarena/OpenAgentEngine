@@ -1,0 +1,11 @@
+# OS
+.DS_Store
+
+# Termite Protocol — ephemeral runtime files
+.birth
+.birth.*
+.field-breath
+.pheromone
+.termite.db
+.termite.db-wal
+.termite.db-shm
