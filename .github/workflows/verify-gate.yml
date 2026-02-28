@@ -38,3 +38,7 @@ jobs:
 
       - name: Verify quality gate
         run: pnpm run verify:gate
+        env:
+          S015_REQUIRE_LIVE_BRANCH_PROTECTION: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '1' || '0' }}
+          S015_REPO: ${{ github.repository }}
+          BRANCH_PROTECTION_AUDIT_TOKEN: ${{ secrets.BRANCH_PROTECTION_AUDIT_TOKEN }}

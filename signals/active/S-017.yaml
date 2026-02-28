@@ -1,0 +1,14 @@
+id: S-017
+type: HOLE
+title: "Apply repository secret for S-015 live drift audit and verify first main run"
+status: open
+weight: 46
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: unassigned
+module: "repository-settings"
+tags: [phase-12,governance,ops,branch-protection]
+next: "Set BRANCH_PROTECTION_AUDIT_TOKEN in GitHub repository secrets and confirm verify-gate on main runs S-015 in required-live mode without skip"
+touch_count: 0
+source: emergent

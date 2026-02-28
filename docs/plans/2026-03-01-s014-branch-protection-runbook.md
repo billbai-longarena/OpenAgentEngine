@@ -86,3 +86,20 @@ When quality gate contexts change:
 3. Update `.github/branch-protection.policy.json`
 4. Update `.github/branch-protection.api.json`
 5. Re-apply branch protection rule per this runbook
+
+## 8. CI Drift-Audit Credential (S-016)
+
+`verify:gate` includes `verify:s015` branch-protection drift audit.
+
+- `pull_request` runs allow CI-safe skip when credentials are unavailable.
+- `push` to `main` requires live branch-protection audit (non-skip).
+
+Required repository secret:
+
+- Name: `BRANCH_PROTECTION_AUDIT_TOKEN`
+- Scope: token must be able to read branch protection for this repository.
+
+Behavior:
+
+- If secret is missing on `push` to `main`, `verify:gate` fails by design.
+- If secret is present but permissions are insufficient, `verify:gate` fails and prints API status/body summary.

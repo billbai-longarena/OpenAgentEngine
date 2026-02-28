@@ -63,6 +63,14 @@ node scripts/verify-s015-branch-protection-drift.mjs
 ```
 Pass marker: `S-015 branch-protection drift verified: ...`
 
+Optional strict mode (fail if live audit cannot run):
+```bash
+S015_REQUIRE_LIVE_BRANCH_PROTECTION=1 \
+S015_REPO=<owner/repo> \
+BRANCH_PROTECTION_AUDIT_TOKEN=<token> \
+node scripts/verify-s015-branch-protection-drift.mjs
+```
+
 10. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 + S-014 + S-015 checks):
 ```bash
 pnpm run verify:gate
@@ -79,6 +87,7 @@ Pass criteria:
 - `phase-9-governance-runbook` prints `S-014 governance runbook verified...`
 - `phase-10-governance-drift-audit` prints `S-015 branch-protection drift verified...`
 - command exits `0` and ends with `Quality gate passed.`
+- In GitHub Actions, `push` to `main` runs `phase-10-governance-drift-audit` in required-live mode using `BRANCH_PROTECTION_AUDIT_TOKEN`.
 
 11. CI wiring:
 ```text

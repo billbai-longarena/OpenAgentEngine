@@ -11,6 +11,13 @@ function assert(condition, message) {
   }
 }
 
+function envFlag(name, fallback = false) {
+  const value = process.env[name];
+  if (value === undefined) return fallback;
+  const normalized = String(value).trim().toLowerCase();
+  return ['1', 'true', 'yes', 'on', 'required'].includes(normalized);
+}
+
 async function readJson(filePath) {
   const raw = await readFile(filePath, 'utf8');
   return JSON.parse(raw);
@@ -256,7 +263,7 @@ function parseRepoFromGitRemote() {
 }
 
 function resolveRepoSlug() {
-  const fromEnv = process.env.GITHUB_REPOSITORY || process.env.GH_REPO;
+  const fromEnv = process.env.S015_REPO || process.env.GITHUB_REPOSITORY || process.env.GH_REPO;
   if (fromEnv && fromEnv.includes('/')) {
     return fromEnv.trim();
   }
@@ -311,13 +318,21 @@ async function main() {
     allow_deletions: policySnapshot.allow_deletions
   };
 
-  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || '';
+  const requireLive = envFlag('S015_REQUIRE_LIVE_BRANCH_PROTECTION') || envFlag('S015_REQUIRE_LIVE');
+  const token =
+    process.env.BRANCH_PROTECTION_AUDIT_TOKEN || process.env.GITHUB_TOKEN || process.env.GH_TOKEN || '';
   const repoSlug = resolveRepoSlug();
 
   if (!token || !repoSlug) {
-    const reason = !token && !repoSlug ? 'missing_token_and_repository' : !token ? 'missing_token' : 'missing_repository';
+    const reason =
+      !token && !repoSlug ? 'missing_token_and_repository' : !token ? 'missing_token' : 'missing_repository';
+    if (requireLive) {
+      throw new Error(
+        `Live branch-protection audit is required but unavailable (${reason}). Set BRANCH_PROTECTION_AUDIT_TOKEN and S015_REPO/GITHUB_REPOSITORY in this execution context.`
+      );
+    }
     console.log(
-      `S-015 branch-protection drift verified: branch=${expectedLive.branch} contexts=${expectedLive.required_status_checks.contexts.join(',')} live_check=skipped reason=${reason}`
+      `S-015 branch-protection drift verified: branch=${expectedLive.branch} contexts=${expectedLive.required_status_checks.contexts.join(',')} live_check=skipped mode=optional reason=${reason}`
     );
     return;
   }
@@ -330,7 +345,7 @@ async function main() {
   }
 
   console.log(
-    `S-015 branch-protection drift verified: repo=${repoSlug} branch=${expectedLive.branch} contexts=${expectedLive.required_status_checks.contexts.join(',')} live_check=aligned`
+    `S-015 branch-protection drift verified: repo=${repoSlug} branch=${expectedLive.branch} contexts=${expectedLive.required_status_checks.contexts.join(',')} live_check=aligned mode=${requireLive ? 'required' : 'optional'}`
   );
 }
 
