@@ -33,13 +33,19 @@ node scripts/verify-s006-replay.mjs
 node scripts/verify-s007-routing.mjs
 ```
 
-5. Verify phase-6 AI Presence continuous world.delta subscription baseline:
+5. Verify phase-4 AI Presence continuous world.delta subscription baseline:
 ```bash
 node scripts/verify-s010-ai-presence.mjs
 ```
 Pass marker: `S-010 ai-presence verified: world=... tick=... deltas=... role=... status=connected`
 
-6. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 checks):
+6. Verify phase-6 DB export narrative preservation:
+```bash
+node scripts/verify-s011-export-preserve.mjs
+```
+Pass marker: `S-011 export-preserve verified: signal=... observation=... markers retained`
+
+7. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 + S-010 + S-011 checks):
 ```bash
 pnpm run verify:gate
 ```
@@ -49,20 +55,22 @@ Pass criteria:
 - `phase-1-ws-flow` prints `S-005 flow verified...`
 - `phase-2-replay` prints `S-006 replay verified...`
 - `phase-3-routing` prints `S-007 routing verified...`
+- `phase-4-ai-presence` prints `S-010 ai-presence verified...`
+- `phase-6-export-preserve` prints `S-011 export-preserve verified...`
 - command exits `0` and ends with `Quality gate passed.`
 
-7. CI wiring:
+8. CI wiring:
 ```text
 .github/workflows/verify-gate.yml
 ```
 This workflow runs `pnpm run verify:gate` on `pull_request`, `push` to `main`, and manual dispatch.
 
-8. Start local infra baseline (PostgreSQL + Redis + NATS):
+9. Start local infra baseline (PostgreSQL + Redis + NATS):
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
-9. Optional workspace commands (after installing deps):
+10. Optional workspace commands (after installing deps):
 ```bash
 pnpm install
 pnpm run lint

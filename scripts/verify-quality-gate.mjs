@@ -21,6 +21,16 @@ const steps = [
     name: 'phase-3-routing',
     command: ['node', 'scripts/verify-s007-routing.mjs'],
     successMarker: 'S-007 routing verified'
+  },
+  {
+    name: 'phase-4-ai-presence',
+    command: ['node', 'scripts/verify-s010-ai-presence.mjs'],
+    successMarker: 'S-010 ai-presence verified'
+  },
+  {
+    name: 'phase-6-export-preserve',
+    command: ['node', 'scripts/verify-s011-export-preserve.mjs'],
+    successMarker: 'S-011 export-preserve verified'
   }
 ];
 

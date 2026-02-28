@@ -36,10 +36,11 @@
 | S-009 | HOLE | Wire verify:gate into CI workflow | 60 | 14 | done | codex-worker-s009 |
 | S-010 | HOLE | Implement AI Presence continuous world-signal subscription baseline | 58 | 14 | done | codex-heartbeat |
 | S-011 | HOLE | Preserve narrative YAML fields during DB export | 56 | 14 | done | codex-worker-s011 |
+| S-012 | HOLE | Extend quality gate with S-010 and S-011 verification | 54 | 14 | done | codex-worker-s012 |
 
 ## Hotspot Areas
 
-(none — `S-011` export narrative preservation baseline is implemented)
+(none — `S-012` quality gate coverage baseline is implemented)
 
 ## Notes for AI
 
@@ -47,7 +48,7 @@
 - **Read `CHARTER.md` for project identity and design principles (now 33 principles, C-xxx numbered).**
 - **Read `docs/plans/2026-02-28-worldview-design.md` for the worldview design** — the conceptual shift from "game engine" to "world substrate."
 - **Read `docs/plans/2026-02-28-tech-stack-architecture.md` for v0 stack and system boundary decisions** before scaffolding runtime code.
-- **For S-004/S-005/S-006/S-007/S-008/S-009/S-010/S-011 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase handoff aligned with worldview constraints.
+- **For S-004/S-005/S-006/S-007/S-008/S-009/S-010/S-011/S-012 implementation, enforce `docs/plans/2026-02-28-s004-scaffold-contract.md`** to keep phase handoff aligned with worldview constraints.
 - **Signal precedence**: if wording in S-002 (founding vision) conflicts with S-003/CHARTER worldview extensions, use S-003 + CHARTER as current authority.
 - Core terminology shift: "Game" → "World", "Player" → "Inhabitant", "Create" → "Inhabit/Shape", "Share" → "Invite", "engineAI" → "AI Presence"
 - The founding vision prioritizes people who love interactive experiences — they inhabit worlds, not "play games."
@@ -58,7 +59,7 @@
 
 ## Known Limitations
 
-- Phase-0 through phase-6 baselines are implemented; `S-010` is done and verified locally.
+- Phase-0 through phase-7 baselines are implemented; `S-012` is done and verified locally.
 - DB export currently preserves key narrative blocks (`signals.vision/description`, `observations.detail`); additional custom fields still require allowlist extension if introduced.
 - Local and CI quality gate are both wired via `pnpm run verify:gate`; branch protection policy is not enforced in repository settings yet.
 
