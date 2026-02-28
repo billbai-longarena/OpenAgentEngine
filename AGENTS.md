@@ -80,9 +80,15 @@ IF 不可执行:
 
 ---
 
-## Project Overview
+## Project Overview / Charter Soul
 
-OpenAgentEngine — An open-source game engine for AI agents (engineAI) and human game lovers to collaborate. Human users don't need technical skills; they communicate with engineAI via natural language to modify games, create new gameplay, and share with others. High-frequency actions use buttons for intuitive interaction; creative work uses natural language conversation.
+OpenAgentEngine — lets non-technical game lovers create and modify games via natural language.
+
+- **Not a traditional game engine** (C-002). Users are players with taste, not developers (C-030).
+- **Three Mounds**: Dev = AI termites + human devs → Product = engineAI (runtime AI) → Customer = game lovers.
+- **Interaction split**: buttons for high-frequency actions, natural language for creative work (C-101).
+- **AI is first-class**: termites are first-class developers (C-200), engineAI is a collaborator not a tool (C-021).
+- **Making design decisions → read `CHARTER.md`** (23 numbered principles, full identity and design guidance).
 
 ## Project Structure & Module Organization
 

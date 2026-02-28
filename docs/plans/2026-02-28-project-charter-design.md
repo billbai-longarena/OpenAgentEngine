@@ -29,9 +29,32 @@ Create `CHARTER.md` at P1 protection level (append-only) as the project's perman
    - 3b. Technical Principles (C-200 to C-204): architecture constraints
    - 3c. engineAI Principles (C-300 to C-304): runtime AI behavior
 
+## Reading Mechanism (Layered Transmission)
+
+Charter principles reach termites through a three-tier mechanism that respects
+the protocol's "termites are blind, context is limited" principle:
+
+```
+Tier 1: Charter Soul (~5 lines)    → embedded in CLAUDE.md / AGENTS.md project overview
+        Every termite reads this      Already in the arrive flow, zero extra cost
+
+Tier 2: Relevant principles (on demand) → triggered by soul's pointer: "making design decisions → read CHARTER.md"
+        Only scouts/architects need      Same pattern as "caste question → read TERMITE_PROTOCOL.md Part III"
+
+Tier 3: Full charter (reference)    → CHARTER.md full text
+        For humans and audits          P1 protected, not consumed at runtime
+```
+
+Why NOT convert to rules: Charter principles are identity/values, not trigger-action pairs.
+They should never be disputed or archived. Shoehorning them into rule format is a category error.
+
+Why NOT modify field-arrive.sh: It's a protocol-level script. If the charter pattern proves
+valuable, it should be proposed back via O-001 audit, not hacked in locally.
+
 ## Integration
 
-- Referenced from CLAUDE.md and AGENTS.md lookup tables
+- Charter soul embedded in CLAUDE.md and AGENTS.md project overview sections
+- Charter referenced from lookup tables in both entry files
 - O-001 observation recorded: protocol gap for "project charter" concept
 - S-002 founding vision signal remains as historical record
 
