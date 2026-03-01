@@ -42,11 +42,18 @@ interface WorldInvite {
   lastRedeemedAt: string | null;
 }
 
+interface InviteStore {
+  readonly kind: string;
+  load(inviteId: string): Promise<WorldInvite | null>;
+  persist(invite: WorldInvite): Promise<void>;
+}
+
 const worldClientsByWorld = new Map<string, Set<WorldClient>>();
 const inviteRedeemLocks = new Map<string, Promise<void>>();
 const worldDeltaLogDir = process.env.WORLD_DELTA_LOG_DIR ?? '.runtime-data/world-delta-log';
 const worldMetadataDir = process.env.WORLD_METADATA_DIR ?? '.runtime-data/world-metadata';
 const defaultWorldId = process.env.DEFAULT_WORLD_ID ?? 'world-0001';
+const inviteStoreDriver = (process.env.WORLD_INVITE_STORE_DRIVER ?? 'file').trim().toLowerCase();
 const inviteStoreDir = process.env.WORLD_INVITE_STORE_DIR ?? join(worldMetadataDir, 'invites');
 const inviteRedeemLockDir = process.env.WORLD_INVITE_LOCK_DIR ?? join(inviteStoreDir, 'locks');
 const inviteRedeemLockTimeoutMs = parsePositiveInt(process.env.WORLD_INVITE_LOCK_TIMEOUT_MS, 5000, 60000);
@@ -269,24 +276,51 @@ async function writeFileAtomic(filePath: string, content: string): Promise<void>
   }
 }
 
-async function loadWorldInvite(inviteId: string): Promise<WorldInvite | null> {
-  let content = '';
-  try {
-    content = await readFile(worldInvitePath(inviteId), 'utf8');
-  } catch {
-    return null;
+function createInviteStore(): InviteStore {
+  if (inviteStoreDriver === 'file' || inviteStoreDriver === 'filesystem') {
+    return {
+      kind: 'file',
+      async load(inviteId: string): Promise<WorldInvite | null> {
+        let content = '';
+        try {
+          content = await readFile(worldInvitePath(inviteId), 'utf8');
+        } catch {
+          return null;
+        }
+
+        try {
+          const parsed = JSON.parse(content);
+          return isWorldInvite(parsed) ? parsed : null;
+        } catch {
+          return null;
+        }
+      },
+      async persist(invite: WorldInvite): Promise<void> {
+        await writeFileAtomic(worldInvitePath(invite.inviteId), `${JSON.stringify(invite, null, 2)}\n`);
+      }
+    };
   }
 
-  try {
-    const parsed = JSON.parse(content);
-    return isWorldInvite(parsed) ? parsed : null;
-  } catch {
-    return null;
+  if (inviteStoreDriver === 'postgres') {
+    throw new Error(
+      'WORLD_INVITE_STORE_DRIVER=postgres is not implemented yet. Complete S-022 backend implementation first.'
+    );
   }
+
+  throw new Error(
+    `Unsupported WORLD_INVITE_STORE_DRIVER=${inviteStoreDriver}. Supported drivers: file, filesystem, postgres.`
+  );
+}
+
+const inviteStore = createInviteStore();
+app.log.info({ inviteStoreDriver: inviteStore.kind }, 'Invite store driver configured');
+
+async function loadWorldInvite(inviteId: string): Promise<WorldInvite | null> {
+  return inviteStore.load(inviteId);
 }
 
 async function persistWorldInvite(invite: WorldInvite): Promise<void> {
-  await writeFileAtomic(worldInvitePath(invite.inviteId), `${JSON.stringify(invite, null, 2)}\n`);
+  await inviteStore.persist(invite);
 }
 
 function isInviteExpired(invite: WorldInvite, nowEpochMs: number): boolean {

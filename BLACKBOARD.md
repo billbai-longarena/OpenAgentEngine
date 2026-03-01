@@ -46,7 +46,7 @@
 | S-019 | HOLE | Implement shared transactional invite store to guarantee cross-instance redeem atomicity | 46 | 14 | done | codex-worker-s019 |
 | S-020 | HOLE | Design external transactional invite store contract for multi-region redeem consistency | 40 | 14 | done | codex-worker-s020-contract |
 | S-021 | HOLE | Implement external transactional invite store adapter for isolated/multi-region gateways | 38 | 14 | done | codex-worker-s021-adapter |
-| S-022 | HOLE | Implement non-filesystem external invite store adapter (transactional backend) | 36 | 14 | open | unassigned |
+| S-022 | HOLE | Implement non-filesystem external invite store adapter (transactional backend) | 35 | 14 | open | unassigned |
 
 ## Hotspot Areas
 
@@ -57,6 +57,7 @@
 - S-020 closure captured on 2026-03-01: external invite-store contract is defined in `docs/plans/2026-03-01-s020-external-invite-store-contract.md` and `verify:s020` validates isolated storage boundary behavior (`[201,404]` with `invite_not_found` on isolated peer).
 - S-021 closure captured on 2026-03-01: gateway decouples invite persistence via `WORLD_INVITE_STORE_DIR`; `verify:s021` and `verify:gate` phase-15 validate isolated metadata roots with shared invite-store consistency (`[201,409]` with loser `invite_exhausted`).
 - S-022 seeded on 2026-03-01: next execution target is a true non-filesystem transactional invite store backend (PostgreSQL preferred) with a new verification phase on top of S-021.
+- S-022 slice-1 advanced on 2026-03-01: gateway now has `WORLD_INVITE_STORE_DRIVER` selection with an `InviteStore` abstraction and file/filesystem adapter encapsulation; PostgreSQL driver is explicitly reserved for next implementation slice.
 
 ## Notes for AI
 
