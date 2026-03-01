@@ -9,6 +9,6 @@ last_touched: 2026-03-01
 owner: unassigned
 module: "apps/gateway"
 tags: [phase-15,invite,consistency,datastore,postgres,redis]
-next: "Postgres invite store adapter (jsonb persistence + advisory lock path) landed; next is verify:s022 and phase-16 gate coverage for non-filesystem consistency."
-touch_count: 3
+next: "Postgres invite store adapter and phase-16/verify:s022 driver-selection coverage are landed; next is dual-gateway runtime verification against a real shared Postgres DSN."
+touch_count: 4
 source: emergent

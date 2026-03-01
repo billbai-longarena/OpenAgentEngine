@@ -66,6 +66,11 @@ const steps = [
     name: 'phase-15-external-invite-store',
     command: ['node', 'scripts/verify-s021-external-invite-store.mjs'],
     successMarker: 'S-021 external invite store verified'
+  },
+  {
+    name: 'phase-16-invite-store-driver-selection',
+    command: ['node', 'scripts/verify-s022-driver-selection.mjs'],
+    successMarker: 'S-022 invite store driver selection verified'
   }
 ];
 
