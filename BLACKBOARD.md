@@ -46,7 +46,7 @@
 | S-019 | HOLE | Implement shared transactional invite store to guarantee cross-instance redeem atomicity | 46 | 14 | done | codex-worker-s019 |
 | S-020 | HOLE | Design external transactional invite store contract for multi-region redeem consistency | 40 | 14 | done | codex-worker-s020-contract |
 | S-021 | HOLE | Implement external transactional invite store adapter for isolated/multi-region gateways | 38 | 14 | done | codex-worker-s021-adapter |
-| S-022 | HOLE | Implement non-filesystem external invite store adapter (transactional backend) | 35 | 14 | open | unassigned |
+| S-022 | HOLE | Implement non-filesystem external invite store adapter (transactional backend) | 30 | 14 | done | codex-worker-s022-runtime |
 
 ## Hotspot Areas
 
@@ -62,6 +62,7 @@
 - S-022 slice-3 advanced on 2026-03-01: `verify:s022` and `verify:gate` phase-16 now enforce fail-fast driver selection errors for `WORLD_INVITE_STORE_DRIVER=postgres` without DSN and unsupported driver values.
 - S-022 slice-4 advanced on 2026-03-01: `verify:s021` now supports `S021_INVITE_STORE_DRIVER=postgres`, and new `verify:s022:runtime` executes the dual-gateway redeem scenario against a shared Postgres DSN (or emits a clear skip marker when DSN is absent).
 - S-022 slice-5 advanced on 2026-03-01: `.github/workflows/verify-gate.yml` workflow_dispatch now supports `require_s022_postgres_runtime=true`, wired to `verify:s022:runtime` with secret `S022_POSTGRES_URL` for CI execution of runtime evidence.
+- S-022 closure captured on 2026-03-01: local runtime proof on real PostgreSQL 16.12 DSN (`S022_REQUIRE_RUNTIME=1 pnpm run verify:s022:runtime`) passed with marker `S-022 postgres runtime verified: ... [201,409]`, completing non-filesystem transactional backend verification.
 - S-003 doc sync advanced on 2026-03-01: `README.md` now foregrounds world-substrate anchors and current phase baseline (no longer framed as phase-0-only scaffold).
 
 ## Notes for AI
@@ -89,7 +90,7 @@
 - Branch protection and drift-audit credentials are configured; continue monitoring `verify:gate` for future context drift.
 - DB export currently preserves key narrative blocks (`signals.vision/description`, `observations.detail`); additional custom fields still require allowlist extension if introduced.
 - Local and CI quality gate are both wired via `pnpm run verify:gate`.
-- Postgres invite-store adapter is wired behind `WORLD_INVITE_STORE_DRIVER`, runtime harness/CI dispatch wiring are available, and closure evidence is still pending execution against a real shared Postgres DSN in environment.
+- Postgres invite-store adapter runtime proof is complete locally; keep workflow_dispatch `require_s022_postgres_runtime=true` + secret `S022_POSTGRES_URL` as recurring CI evidence path.
 
 ## Immune Log
 
