@@ -3,6 +3,7 @@ import websocket from '@fastify/websocket';
 import { randomUUID } from 'node:crypto';
 import { access, appendFile, mkdir, open, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { Pool } from 'pg';
 import { isWorldDelta, type WorldDelta } from '@openagentengine/signal-schema';
 
 const app = Fastify({ logger: true });
@@ -46,6 +47,8 @@ interface InviteStore {
   readonly kind: string;
   load(inviteId: string): Promise<WorldInvite | null>;
   persist(invite: WorldInvite): Promise<void>;
+  withRedeemLock?<T>(inviteId: string, action: () => Promise<T>): Promise<T>;
+  close?(): Promise<void>;
 }
 
 const worldClientsByWorld = new Map<string, Set<WorldClient>>();
@@ -55,6 +58,9 @@ const worldMetadataDir = process.env.WORLD_METADATA_DIR ?? '.runtime-data/world-
 const defaultWorldId = process.env.DEFAULT_WORLD_ID ?? 'world-0001';
 const inviteStoreDriver = (process.env.WORLD_INVITE_STORE_DRIVER ?? 'file').trim().toLowerCase();
 const inviteStoreDir = process.env.WORLD_INVITE_STORE_DIR ?? join(worldMetadataDir, 'invites');
+const inviteStorePostgresUrl = process.env.WORLD_INVITE_STORE_POSTGRES_URL ?? process.env.DATABASE_URL ?? '';
+const inviteStorePostgresPoolMax = parsePositiveInt(process.env.WORLD_INVITE_STORE_POSTGRES_POOL_MAX, 10, 200);
+const inviteStoreAdvisoryNamespace = 22022;
 const inviteRedeemLockDir = process.env.WORLD_INVITE_LOCK_DIR ?? join(inviteStoreDir, 'locks');
 const inviteRedeemLockTimeoutMs = parsePositiveInt(process.env.WORLD_INVITE_LOCK_TIMEOUT_MS, 5000, 60000);
 const inviteRedeemLockStaleMs = parsePositiveInt(process.env.WORLD_INVITE_LOCK_STALE_MS, 30000, 300000);
@@ -302,9 +308,101 @@ function createInviteStore(): InviteStore {
   }
 
   if (inviteStoreDriver === 'postgres') {
-    throw new Error(
-      'WORLD_INVITE_STORE_DRIVER=postgres is not implemented yet. Complete S-022 backend implementation first.'
-    );
+    if (!inviteStorePostgresUrl) {
+      throw new Error(
+        'WORLD_INVITE_STORE_DRIVER=postgres requires WORLD_INVITE_STORE_POSTGRES_URL or DATABASE_URL.'
+      );
+    }
+
+    const pool = new Pool({
+      connectionString: inviteStorePostgresUrl,
+      max: inviteStorePostgresPoolMax
+    });
+
+    let ready: Promise<void> | null = null;
+    const ensureReady = async (): Promise<void> => {
+      if (!ready) {
+        ready = pool
+          .query(`
+            CREATE TABLE IF NOT EXISTS world_invites (
+              invite_id TEXT PRIMARY KEY,
+              payload JSONB NOT NULL,
+              updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            );
+          `)
+          .then(() => undefined)
+          .catch((error: unknown) => {
+            ready = null;
+            throw error;
+          });
+      }
+      await ready;
+    };
+
+    const parseStoredInvite = (stored: unknown): WorldInvite | null => {
+      if (isWorldInvite(stored)) return stored;
+      if (typeof stored === 'string') {
+        try {
+          const parsed = JSON.parse(stored);
+          return isWorldInvite(parsed) ? parsed : null;
+        } catch {
+          return null;
+        }
+      }
+      return null;
+    };
+
+    return {
+      kind: 'postgres',
+      async load(inviteId: string): Promise<WorldInvite | null> {
+        await ensureReady();
+        const result = await pool.query<{ payload: unknown }>(
+          'SELECT payload FROM world_invites WHERE invite_id = $1',
+          [inviteId]
+        );
+        if (result.rowCount === 0) return null;
+        return parseStoredInvite(result.rows[0]?.payload ?? null);
+      },
+      async persist(invite: WorldInvite): Promise<void> {
+        await ensureReady();
+        await pool.query(
+          `
+            INSERT INTO world_invites (invite_id, payload, updated_at)
+            VALUES ($1, $2::jsonb, NOW())
+            ON CONFLICT (invite_id)
+            DO UPDATE SET payload = EXCLUDED.payload, updated_at = NOW()
+          `,
+          [invite.inviteId, JSON.stringify(invite)]
+        );
+      },
+      async withRedeemLock<T>(inviteId: string, action: () => Promise<T>): Promise<T> {
+        await ensureReady();
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+          await client.query(`SET LOCAL lock_timeout = '${inviteRedeemLockTimeoutMs}ms'`);
+          await client.query('SELECT pg_advisory_xact_lock($1, hashtext($2));', [
+            inviteStoreAdvisoryNamespace,
+            inviteId
+          ]);
+          const result = await action();
+          await client.query('COMMIT');
+          return result;
+        } catch (error) {
+          try {
+            await client.query('ROLLBACK');
+          } catch {
+            // ignore rollback failures
+          }
+          throw error;
+        } finally {
+          client.release();
+        }
+      },
+      async close(): Promise<void> {
+        await pool.end();
+      }
+    };
   }
 
   throw new Error(
@@ -314,6 +412,11 @@ function createInviteStore(): InviteStore {
 
 const inviteStore = createInviteStore();
 app.log.info({ inviteStoreDriver: inviteStore.kind }, 'Invite store driver configured');
+app.addHook('onClose', async () => {
+  if (inviteStore.close) {
+    await inviteStore.close();
+  }
+});
 
 async function loadWorldInvite(inviteId: string): Promise<WorldInvite | null> {
   return inviteStore.load(inviteId);
@@ -341,6 +444,12 @@ class InviteRedeemLockTimeoutError extends Error {
     this.name = 'InviteRedeemLockTimeoutError';
     this.inviteId = inviteId;
   }
+}
+
+function isPostgresLockTimeoutError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const code = (error as { code?: unknown }).code;
+  return code === '55P03';
 }
 
 function delay(ms: number): Promise<void> {
@@ -409,7 +518,15 @@ async function withInviteRedeemLock<T>(inviteId: string, action: () => Promise<T
   await previous;
 
   try {
+    if (inviteStore.withRedeemLock) {
+      return await inviteStore.withRedeemLock(inviteId, action);
+    }
     return await withDistributedInviteRedeemLock(inviteId, action);
+  } catch (error) {
+    if (isPostgresLockTimeoutError(error)) {
+      throw new InviteRedeemLockTimeoutError(inviteId);
+    }
+    throw error;
   } finally {
     releaseCurrent();
     if (inviteRedeemLocks.get(inviteId) === tail) {

@@ -9,6 +9,6 @@ last_touched: 2026-03-01
 owner: unassigned
 module: "apps/gateway"
 tags: [phase-15,invite,consistency,datastore,postgres,redis]
-next: "Invite store driver selection + file adapter encapsulation landed (WORLD_INVITE_STORE_DRIVER). Next: implement postgres transactional backend and add verify:s022 + phase-16 gate."
-touch_count: 1
+next: "Postgres invite store adapter (jsonb persistence + advisory lock path) landed; next is verify:s022 and phase-16 gate coverage for non-filesystem consistency."
+touch_count: 3
 source: emergent

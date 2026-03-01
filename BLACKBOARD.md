@@ -58,6 +58,7 @@
 - S-021 closure captured on 2026-03-01: gateway decouples invite persistence via `WORLD_INVITE_STORE_DIR`; `verify:s021` and `verify:gate` phase-15 validate isolated metadata roots with shared invite-store consistency (`[201,409]` with loser `invite_exhausted`).
 - S-022 seeded on 2026-03-01: next execution target is a true non-filesystem transactional invite store backend (PostgreSQL preferred) with a new verification phase on top of S-021.
 - S-022 slice-1 advanced on 2026-03-01: gateway now has `WORLD_INVITE_STORE_DRIVER` selection with an `InviteStore` abstraction and file/filesystem adapter encapsulation; PostgreSQL driver is explicitly reserved for next implementation slice.
+- S-022 slice-2 advanced on 2026-03-01: `WORLD_INVITE_STORE_DRIVER=postgres` now provides JSONB-backed invite persistence plus advisory-lock redeem serialization, removing the shared-filesystem lock dependency for cross-instance redeem critical sections.
 
 ## Notes for AI
 
@@ -84,7 +85,7 @@
 - Branch protection and drift-audit credentials are configured; continue monitoring `verify:gate` for future context drift.
 - DB export currently preserves key narrative blocks (`signals.vision/description`, `observations.detail`); additional custom fields still require allowlist extension if introduced.
 - Local and CI quality gate are both wired via `pnpm run verify:gate`.
-- Current external adapter is filesystem-backed (`WORLD_INVITE_STORE_DIR` + lock files); true non-filesystem datastore adapters are tracked as `S-022`.
+- Postgres invite-store adapter is now wired behind `WORLD_INVITE_STORE_DRIVER`; dedicated `verify:s022` + phase-16 gate coverage is still pending for full closure.
 
 ## Immune Log
 
