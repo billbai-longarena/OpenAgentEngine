@@ -7,6 +7,7 @@ OpenAgentEngine is a world substrate for human-AI co-inhabitation.
 - Fundamental unit is **World**, not Game.
 - Core loop is **Inhabit -> Shape -> Resonate -> Invite**.
 - AI acts as a fluid **Presence** in world context.
+- Founding vision (S-002) remains historical context; when wording conflicts, S-003 + CHARTER are authoritative.
 
 See:
 - `CHARTER.md`
@@ -36,6 +37,12 @@ Monorepo modules:
 ```bash
 node scripts/verify-workspace.mjs
 ```
+
+Founding vision precedence guardrail:
+```bash
+node scripts/verify-s002-founding-precedence.mjs
+```
+Pass marker: `S-002 founding vision precedence verified: ...`
 
 Worldview anchor guardrail:
 ```bash
@@ -133,13 +140,14 @@ S022_POSTGRES_URL=<postgres-dsn> pnpm run verify:s022:runtime
 Pass marker (when DSN present): `S-022 postgres runtime verified: ...`
 Skip marker (when DSN absent): `S-022 postgres runtime verification skipped: ...`
 
-16. Run the phase quality gate (single command for workspace + S-003 + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 + S-014 + S-015 + S-018 + S-019 + S-020 + S-021 + S-022 driver checks):
+16. Run the phase quality gate (single command for workspace + S-002 + S-003 + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 + S-014 + S-015 + S-018 + S-019 + S-020 + S-021 + S-022 driver checks):
 ```bash
 pnpm run verify:gate
 ```
 
 Pass criteria:
 - `workspace-baseline` prints `Workspace verification passed.`
+- `phase-founding-vision-precedence` prints `S-002 founding vision precedence verified...`
 - `phase-worldview-anchors` prints `S-003 worldview anchors verified...`
 - `phase-1-ws-flow` prints `S-005 flow verified...`
 - `phase-2-replay` prints `S-006 replay verified...`

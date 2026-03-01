@@ -26,7 +26,7 @@
 | ID | Type | Title | Weight | TTL | Status | Owner |
 |----|------|-------|--------|-----|--------|-------|
 | S-001 | EXPLORE | Map project structure, establish tech stack | 20 | 14 | done | codex-scout-s001 |
-| S-002 | PHEROMONE | Founding Vision — project identity and design principles | 84 | 90 | open | unassigned |
+| S-002 | PHEROMONE | Founding Vision — project identity and design principles | 24 | 90 | done | codex-worker-s002-precedence |
 | S-003 | PHEROMONE | Worldview Design — from game engine to world substrate | 28 | 90 | done | codex-worker-s003-guardrail |
 | S-004 | HOLE | Scaffold phase-0 monorepo and baseline services | 30 | 14 | done | codex-worker-s004 |
 | S-005 | HOLE | Implement phase-1 runtime loop + WS delta flow | 68 | 14 | done | codex-heartbeat |
@@ -65,6 +65,7 @@
 - S-022 closure captured on 2026-03-01: local runtime proof on real PostgreSQL 16.12 DSN (`S022_REQUIRE_RUNTIME=1 pnpm run verify:s022:runtime`) passed with marker `S-022 postgres runtime verified: ... [201,409]`, completing non-filesystem transactional backend verification.
 - S-003 doc sync advanced on 2026-03-01: `README.md` now foregrounds world-substrate anchors and current phase baseline (no longer framed as phase-0-only scaffold).
 - S-003 closure captured on 2026-03-01: new `verify:s003` (`scripts/verify-s003-worldview-anchors.mjs`) is wired into `verify:gate` as `phase-worldview-anchors`; it enforces README worldview anchors and blocks regression to deprecated baseline wording (`S-022 In Progress`).
+- S-002 closure captured on 2026-03-01: new `verify:s002` (`scripts/verify-s002-founding-precedence.mjs`) is wired into `verify:gate` as `phase-founding-vision-precedence`; it enforces that S-002 remains historical context while S-003 + CHARTER stay authoritative on worldview wording.
 
 ## Notes for AI
 

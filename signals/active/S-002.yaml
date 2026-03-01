@@ -1,16 +1,16 @@
 id: S-002
 type: PHEROMONE
 title: "Founding Vision — OpenAgentEngine identity and design principles"
-status: open
-weight: 84
+status: done
+weight: 24
 ttl_days: 90
 created: 2026-02-28
 last_touched: 2026-03-01
-owner: unassigned
+owner: codex-worker-s002-precedence
 module: "project-root"
 tags: [genesis, vision, founding, directive]
 next: "Reference with S-003 and CHARTER together; where terminology or architecture semantics differ, S-003/CHARTER take precedence"
-touch_count: 5
+touch_count: 6
 source: directive
 vision: |
   OpenAgentEngine is an open-source game engine for AI agents and human game

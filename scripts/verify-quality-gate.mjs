@@ -8,6 +8,11 @@ const steps = [
     successMarker: 'Workspace verification passed.'
   },
   {
+    name: 'phase-founding-vision-precedence',
+    command: ['node', 'scripts/verify-s002-founding-precedence.mjs'],
+    successMarker: 'S-002 founding vision precedence verified'
+  },
+  {
     name: 'phase-worldview-anchors',
     command: ['node', 'scripts/verify-s003-worldview-anchors.mjs'],
     successMarker: 'S-003 worldview anchors verified'
