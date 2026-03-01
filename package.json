@@ -10,6 +10,7 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "verify:workspace": "node scripts/verify-workspace.mjs",
+    "verify:s003": "node scripts/verify-s003-worldview-anchors.mjs",
     "verify:s005": "node scripts/verify-s005-flow.mjs",
     "verify:s006": "node scripts/verify-s006-replay.mjs",
     "verify:s007": "node scripts/verify-s007-routing.mjs",

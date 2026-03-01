@@ -27,7 +27,7 @@
 |----|------|-------|--------|-----|--------|-------|
 | S-001 | EXPLORE | Map project structure, establish tech stack | 20 | 14 | done | codex-scout-s001 |
 | S-002 | PHEROMONE | Founding Vision — project identity and design principles | 84 | 90 | open | unassigned |
-| S-003 | PHEROMONE | Worldview Design — from game engine to world substrate | 88 | 90 | open | unassigned |
+| S-003 | PHEROMONE | Worldview Design — from game engine to world substrate | 28 | 90 | done | codex-worker-s003-guardrail |
 | S-004 | HOLE | Scaffold phase-0 monorepo and baseline services | 30 | 14 | done | codex-worker-s004 |
 | S-005 | HOLE | Implement phase-1 runtime loop + WS delta flow | 68 | 14 | done | codex-heartbeat |
 | S-006 | HOLE | Implement phase-2 world delta persistence and replay baseline | 66 | 14 | done | codex-heartbeat |
@@ -64,6 +64,7 @@
 - S-022 slice-5 advanced on 2026-03-01: `.github/workflows/verify-gate.yml` workflow_dispatch now supports `require_s022_postgres_runtime=true`, wired to `verify:s022:runtime` with secret `S022_POSTGRES_URL` for CI execution of runtime evidence.
 - S-022 closure captured on 2026-03-01: local runtime proof on real PostgreSQL 16.12 DSN (`S022_REQUIRE_RUNTIME=1 pnpm run verify:s022:runtime`) passed with marker `S-022 postgres runtime verified: ... [201,409]`, completing non-filesystem transactional backend verification.
 - S-003 doc sync advanced on 2026-03-01: `README.md` now foregrounds world-substrate anchors and current phase baseline (no longer framed as phase-0-only scaffold).
+- S-003 closure captured on 2026-03-01: new `verify:s003` (`scripts/verify-s003-worldview-anchors.mjs`) is wired into `verify:gate` as `phase-worldview-anchors`; it enforces README worldview anchors and blocks regression to deprecated baseline wording (`S-022 In Progress`).
 
 ## Notes for AI
 

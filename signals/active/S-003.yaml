@@ -1,14 +1,14 @@
 id: S-003
 type: PHEROMONE
 title: "Worldview Design — from game engine to world substrate"
-status: open
-weight: 88
+status: done
+weight: 28
 ttl_days: 90
 created: 2026-02-28
 last_touched: 2026-03-01
-owner: codex-heartbeat
+owner: codex-worker-s003-guardrail
 module: "/"
 tags: [worldview, vision, founding, world-substrate, signal-ecology, ai-presence]
-next: "README worldview anchors and baseline narrative were refreshed; continue reducing remaining user-facing drift from scaffold-era wording to world-substrate terminology."
-touch_count: 15
+next: "Closed 2026-03-01: added verify:s003 worldview-anchor guardrail, wired into verify:gate phase-worldview-anchors, and aligned README baseline wording with world-substrate terminology."
+touch_count: 18
 source: directive

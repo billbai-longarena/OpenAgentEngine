@@ -12,7 +12,7 @@ See:
 - `CHARTER.md`
 - `docs/plans/2026-02-28-worldview-design.md`
 
-## Current Baseline (S-022 In Progress)
+## Current Baseline (S-022 Closed)
 
 Repository state has moved beyond initial scaffold. Current baseline includes:
 - multi-world runtime->gateway WS delta flow and replay persistence
@@ -36,6 +36,12 @@ Monorepo modules:
 ```bash
 node scripts/verify-workspace.mjs
 ```
+
+Worldview anchor guardrail:
+```bash
+node scripts/verify-s003-worldview-anchors.mjs
+```
+Pass marker: `S-003 worldview anchors verified: ...`
 
 2. Verify phase-1 runtime→gateway WS delta flow:
 ```bash
@@ -127,13 +133,14 @@ S022_POSTGRES_URL=<postgres-dsn> pnpm run verify:s022:runtime
 Pass marker (when DSN present): `S-022 postgres runtime verified: ...`
 Skip marker (when DSN absent): `S-022 postgres runtime verification skipped: ...`
 
-16. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 + S-014 + S-015 + S-018 + S-019 + S-020 + S-021 + S-022 driver checks):
+16. Run the phase quality gate (single command for workspace + S-003 + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 + S-014 + S-015 + S-018 + S-019 + S-020 + S-021 + S-022 driver checks):
 ```bash
 pnpm run verify:gate
 ```
 
 Pass criteria:
 - `workspace-baseline` prints `Workspace verification passed.`
+- `phase-worldview-anchors` prints `S-003 worldview anchors verified...`
 - `phase-1-ws-flow` prints `S-005 flow verified...`
 - `phase-2-replay` prints `S-006 replay verified...`
 - `phase-3-routing` prints `S-007 routing verified...`

@@ -8,6 +8,11 @@ const steps = [
     successMarker: 'Workspace verification passed.'
   },
   {
+    name: 'phase-worldview-anchors',
+    command: ['node', 'scripts/verify-s003-worldview-anchors.mjs'],
+    successMarker: 'S-003 worldview anchors verified'
+  },
+  {
     name: 'phase-1-ws-flow',
     command: ['node', 'scripts/verify-s005-flow.mjs'],
     successMarker: 'S-005 flow verified'
