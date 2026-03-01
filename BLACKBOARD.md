@@ -62,6 +62,7 @@
 - S-022 slice-3 advanced on 2026-03-01: `verify:s022` and `verify:gate` phase-16 now enforce fail-fast driver selection errors for `WORLD_INVITE_STORE_DRIVER=postgres` without DSN and unsupported driver values.
 - S-022 slice-4 advanced on 2026-03-01: `verify:s021` now supports `S021_INVITE_STORE_DRIVER=postgres`, and new `verify:s022:runtime` executes the dual-gateway redeem scenario against a shared Postgres DSN (or emits a clear skip marker when DSN is absent).
 - S-022 slice-5 advanced on 2026-03-01: `.github/workflows/verify-gate.yml` workflow_dispatch now supports `require_s022_postgres_runtime=true`, wired to `verify:s022:runtime` with secret `S022_POSTGRES_URL` for CI execution of runtime evidence.
+- S-003 doc sync advanced on 2026-03-01: `README.md` now foregrounds world-substrate anchors and current phase baseline (no longer framed as phase-0-only scaffold).
 
 ## Notes for AI
 

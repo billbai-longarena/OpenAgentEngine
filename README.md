@@ -2,16 +2,35 @@
 
 OpenAgentEngine is a world substrate for human-AI co-inhabitation.
 
-## Phase-0 Scaffold (S-004)
+## Worldview Anchors
 
-This repository currently contains a phase-0 monorepo scaffold for:
-- `apps/web` (Next.js placeholder for inhabitant UX)
-- `apps/gateway` (Fastify + WebSocket seam)
-- `apps/runtime` (world loop seam)
-- `apps/ai-presence` (FastAPI health + signal ingress)
-- shared substrate packages under `packages/`
+- Fundamental unit is **World**, not Game.
+- Core loop is **Inhabit -> Shape -> Resonate -> Invite**.
+- AI acts as a fluid **Presence** in world context.
 
-## Local Bring-up (Scaffold Validation)
+See:
+- `CHARTER.md`
+- `docs/plans/2026-02-28-worldview-design.md`
+
+## Current Baseline (S-022 In Progress)
+
+Repository state has moved beyond initial scaffold. Current baseline includes:
+- multi-world runtime->gateway WS delta flow and replay persistence
+- AI Presence subscription baseline
+- moment crystallization and fork lineage
+- invite creation/redeem flow with cross-instance atomicity checks
+- external invite store separation from world metadata
+- invite store driver selection (`file`, `filesystem`, `postgres`)
+- PostgreSQL invite store adapter with advisory-lock redeem path
+
+Monorepo modules:
+- `apps/web` (inhabitant UX shell)
+- `apps/gateway` (Fastify + WS ingress + invite/fork APIs)
+- `apps/runtime` (world loop emitter)
+- `apps/ai-presence` (presence service)
+- `packages/*` shared protocol/model layers
+
+## Local Verification
 
 1. Verify workspace structure:
 ```bash
@@ -154,5 +173,5 @@ pnpm run build
 
 ## Notes
 
-- This is architecture scaffolding, not production runtime.
+- This repository is still an evolving baseline, not production-hardened runtime.
 - See `docs/plans/2026-02-28-s004-scaffold-contract.md` for implementation constraints.

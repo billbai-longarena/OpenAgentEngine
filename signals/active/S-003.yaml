@@ -6,9 +6,9 @@ weight: 88
 ttl_days: 90
 created: 2026-02-28
 last_touched: 2026-03-01
-owner: unassigned
+owner: codex-heartbeat
 module: "/"
 tags: [worldview, vision, founding, world-substrate, signal-ecology, ai-presence]
-next: "Use docs/plans/2026-03-01-s013-moment-fork-contract.md as execution guardrail for S-013 crystallize/fork semantics and validation"
-touch_count: 14
+next: "README worldview anchors and baseline narrative were refreshed; continue reducing remaining user-facing drift from scaffold-era wording to world-substrate terminology."
+touch_count: 15
 source: directive
