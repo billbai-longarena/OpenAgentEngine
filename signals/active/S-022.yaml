@@ -9,6 +9,6 @@ last_touched: 2026-03-01
 owner: codex-heartbeat
 module: "apps/gateway"
 tags: [phase-15,invite,consistency,datastore,postgres,redis]
-next: "verify:s022:runtime now runs dual-gateway scenario on Postgres when DSN is provided; next is executing it in a real shared Postgres environment and recording closure evidence."
-touch_count: 5
+next: "verify-gate workflow_dispatch now supports require_s022_postgres_runtime=true with secret S022_POSTGRES_URL; next is running that path (or local DSN run) and recording closure evidence."
+touch_count: 6
 source: emergent

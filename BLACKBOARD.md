@@ -61,6 +61,7 @@
 - S-022 slice-2 advanced on 2026-03-01: `WORLD_INVITE_STORE_DRIVER=postgres` now provides JSONB-backed invite persistence plus advisory-lock redeem serialization, removing the shared-filesystem lock dependency for cross-instance redeem critical sections.
 - S-022 slice-3 advanced on 2026-03-01: `verify:s022` and `verify:gate` phase-16 now enforce fail-fast driver selection errors for `WORLD_INVITE_STORE_DRIVER=postgres` without DSN and unsupported driver values.
 - S-022 slice-4 advanced on 2026-03-01: `verify:s021` now supports `S021_INVITE_STORE_DRIVER=postgres`, and new `verify:s022:runtime` executes the dual-gateway redeem scenario against a shared Postgres DSN (or emits a clear skip marker when DSN is absent).
+- S-022 slice-5 advanced on 2026-03-01: `.github/workflows/verify-gate.yml` workflow_dispatch now supports `require_s022_postgres_runtime=true`, wired to `verify:s022:runtime` with secret `S022_POSTGRES_URL` for CI execution of runtime evidence.
 
 ## Notes for AI
 
@@ -87,7 +88,7 @@
 - Branch protection and drift-audit credentials are configured; continue monitoring `verify:gate` for future context drift.
 - DB export currently preserves key narrative blocks (`signals.vision/description`, `observations.detail`); additional custom fields still require allowlist extension if introduced.
 - Local and CI quality gate are both wired via `pnpm run verify:gate`.
-- Postgres invite-store adapter is wired behind `WORLD_INVITE_STORE_DRIVER`, and runtime harness `verify:s022:runtime` is available; closure evidence is still pending execution against a real shared Postgres DSN in environment.
+- Postgres invite-store adapter is wired behind `WORLD_INVITE_STORE_DRIVER`, runtime harness/CI dispatch wiring are available, and closure evidence is still pending execution against a real shared Postgres DSN in environment.
 
 ## Immune Log
 

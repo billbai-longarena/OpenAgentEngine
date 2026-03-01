@@ -83,7 +83,32 @@ node scripts/verify-s019-invite-store.mjs
 ```
 Pass marker: `S-019 invite store verified: ...`
 
-12. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 + S-014 + S-015 + S-018 + S-019 checks):
+12. Verify phase-14 isolated metadata boundary with explicit `invite_not_found` on peer:
+```bash
+node scripts/verify-s020-isolated-storage-boundary.mjs
+```
+Pass marker: `S-020 isolated-storage boundary verified: ...`
+
+13. Verify phase-15 external invite store consistency across isolated metadata roots:
+```bash
+node scripts/verify-s021-external-invite-store.mjs
+```
+Pass marker: `S-021 external invite store verified: ...`
+
+14. Verify phase-16 invite-store driver selection fail-fast behavior:
+```bash
+node scripts/verify-s022-driver-selection.mjs
+```
+Pass marker: `S-022 invite store driver selection verified: ...`
+
+15. Verify S-022 Postgres runtime scenario (requires shared Postgres DSN):
+```bash
+S022_POSTGRES_URL=<postgres-dsn> pnpm run verify:s022:runtime
+```
+Pass marker (when DSN present): `S-022 postgres runtime verified: ...`
+Skip marker (when DSN absent): `S-022 postgres runtime verification skipped: ...`
+
+16. Run the phase quality gate (single command for workspace + S-005 + S-006 + S-007 + S-010 + S-011 + S-013 + S-014 + S-015 + S-018 + S-019 + S-020 + S-021 + S-022 driver checks):
 ```bash
 pnpm run verify:gate
 ```
@@ -100,22 +125,27 @@ Pass criteria:
 - `phase-10-governance-drift-audit` prints `S-015 branch-protection drift verified...`
 - `phase-11-invite-flow` prints `S-018 invite flow verified...`
 - `phase-12-invite-store` prints `S-019 invite store verified...`
+- `phase-14-isolated-storage-boundary` prints `S-020 isolated-storage boundary verified...`
+- `phase-15-external-invite-store` prints `S-021 external invite store verified...`
+- `phase-16-invite-store-driver-selection` prints `S-022 invite store driver selection verified...`
 - command exits `0` and ends with `Quality gate passed.`
 - In GitHub Actions, `push` to `main` runs `phase-10-governance-drift-audit` in required-live mode using `BRANCH_PROTECTION_AUDIT_TOKEN`.
 
-13. CI wiring:
+17. CI wiring:
 ```text
 .github/workflows/verify-gate.yml
 ```
 This workflow runs `pnpm run verify:gate` on `pull_request`, `push` to `main`, and manual dispatch.
-Manual dispatch supports input `require_live_branch_protection_audit=true` to force required-live S-015 audit in CI.
+Manual dispatch supports:
+- `require_live_branch_protection_audit=true` to force required-live S-015 audit in CI.
+- `require_s022_postgres_runtime=true` to force `verify:s022:runtime` in CI (requires repository secret `S022_POSTGRES_URL`).
 
-14. Start local infra baseline (PostgreSQL + Redis + NATS):
+18. Start local infra baseline (PostgreSQL + Redis + NATS):
 ```bash
 docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
-15. Optional workspace commands (after installing deps):
+19. Optional workspace commands (after installing deps):
 ```bash
 pnpm install
 pnpm run lint
