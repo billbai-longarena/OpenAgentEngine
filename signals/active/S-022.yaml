@@ -6,9 +6,9 @@ weight: 35
 ttl_days: 14
 created: 2026-03-01
 last_touched: 2026-03-01
-owner: unassigned
+owner: codex-heartbeat
 module: "apps/gateway"
 tags: [phase-15,invite,consistency,datastore,postgres,redis]
-next: "Postgres invite store adapter and phase-16/verify:s022 driver-selection coverage are landed; next is dual-gateway runtime verification against a real shared Postgres DSN."
-touch_count: 4
+next: "verify:s022:runtime now runs dual-gateway scenario on Postgres when DSN is provided; next is executing it in a real shared Postgres environment and recording closure evidence."
+touch_count: 5
 source: emergent

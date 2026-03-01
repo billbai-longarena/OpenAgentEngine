@@ -10,6 +10,9 @@ const forkWorldPrefix = process.env.S021_FORK_WORLD_PREFIX ?? `world-external-br
 const metadataDirA = process.env.S021_METADATA_A_DIR ?? '.runtime-data/s021-meta-a';
 const metadataDirB = process.env.S021_METADATA_B_DIR ?? '.runtime-data/s021-meta-b';
 const inviteStoreDir = process.env.S021_INVITE_STORE_DIR ?? '.runtime-data/s021-invite-store';
+const inviteStoreDriver = (process.env.S021_INVITE_STORE_DRIVER ?? 'file').trim().toLowerCase();
+const inviteStorePostgresUrl =
+  process.env.S021_POSTGRES_URL ?? process.env.WORLD_INVITE_STORE_POSTGRES_URL ?? process.env.DATABASE_URL ?? '';
 const logDir = process.env.S021_DELTA_LOG_DIR ?? '.runtime-data/s021-log';
 
 const gatewayABaseUrl = `http://127.0.0.1:${gatewayAPort}`;
@@ -23,6 +26,34 @@ const baseEnv = {
 };
 
 const children = [];
+
+function assertInviteStoreDriverConfig() {
+  if (!['file', 'filesystem', 'postgres'].includes(inviteStoreDriver)) {
+    throw new Error(
+      `S021_INVITE_STORE_DRIVER=${inviteStoreDriver} is unsupported. Supported: file, filesystem, postgres.`
+    );
+  }
+  if (inviteStoreDriver === 'postgres' && inviteStorePostgresUrl.length === 0) {
+    throw new Error(
+      'S021_INVITE_STORE_DRIVER=postgres requires S021_POSTGRES_URL or WORLD_INVITE_STORE_POSTGRES_URL or DATABASE_URL.'
+    );
+  }
+}
+
+function inviteStoreEnv(metadataDir) {
+  if (inviteStoreDriver === 'postgres') {
+    return {
+      WORLD_METADATA_DIR: metadataDir,
+      WORLD_INVITE_STORE_DRIVER: 'postgres',
+      WORLD_INVITE_STORE_POSTGRES_URL: inviteStorePostgresUrl
+    };
+  }
+  return {
+    WORLD_METADATA_DIR: metadataDir,
+    WORLD_INVITE_STORE_DRIVER: inviteStoreDriver,
+    WORLD_INVITE_STORE_DIR: inviteStoreDir
+  };
+}
 
 function startProcess(name, args, extraEnv = {}) {
   const child = spawn('pnpm', args, {
@@ -207,6 +238,7 @@ async function cleanup() {
 
 async function main() {
   try {
+    assertInviteStoreDriverConfig();
     await rm(logDir, { recursive: true, force: true });
     await rm(metadataDirA, { recursive: true, force: true });
     await rm(metadataDirB, { recursive: true, force: true });
@@ -217,13 +249,11 @@ async function main() {
 
     startProcess('gateway-a', ['--filter', '@openagentengine/gateway', 'dev'], {
       GATEWAY_PORT: String(gatewayAPort),
-      WORLD_METADATA_DIR: metadataDirA,
-      WORLD_INVITE_STORE_DIR: inviteStoreDir
+      ...inviteStoreEnv(metadataDirA)
     });
     startProcess('gateway-b', ['--filter', '@openagentengine/gateway', 'dev'], {
       GATEWAY_PORT: String(gatewayBPort),
-      WORLD_METADATA_DIR: metadataDirB,
-      WORLD_INVITE_STORE_DIR: inviteStoreDir
+      ...inviteStoreEnv(metadataDirB)
     });
 
     await waitForGatewayReady(gatewayABaseUrl, 12000);
@@ -285,7 +315,7 @@ async function main() {
     await expectInviteExhausted(gatewayABaseUrl, invite.inviteId);
 
     console.log(
-      `S-021 external invite store verified: parent_replay=${parentReplay.length} invite=${invite.inviteId} winner_world=${winnerWorldId} statuses=${left.status}/${right.status} inherited=${lineage.inheritedDeltas} replay_a=${replayA} replay_b=${replayB}`
+      `S-021 external invite store verified: driver=${inviteStoreDriver} parent_replay=${parentReplay.length} invite=${invite.inviteId} winner_world=${winnerWorldId} statuses=${left.status}/${right.status} inherited=${lineage.inheritedDeltas} replay_a=${replayA} replay_b=${replayB}`
     );
   } finally {
     await cleanup();

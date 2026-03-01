@@ -1,7 +1,7 @@
 # S-022 Non-filesystem Invite Store Plan (Phase 15+)
 
 > Date: 2026-03-01
-> Status: Seeded follow-up after S-021
+> Status: In progress (slice-4 landed; runtime evidence pending)
 > Depends on: S-020 contract, S-021 filesystem-backed external store, CHARTER.md
 
 ## Goal
@@ -29,16 +29,18 @@ Distributed production topologies need a backend that does not depend on shared 
 
 ## Verification Strategy
 
-1. Add `verify:s022` that launches dual gateways against one shared external datastore.
-2. Reuse S-021 scenario skeleton; switch from shared invite directory to backend DSN.
-3. Extend `verify:gate` with phase-16 marker for non-filesystem backend.
+1. Keep `verify:s022` as fast fail-fast guardrail for driver selection and DSN requirements.
+2. Reuse S-021 scenario skeleton with `S021_INVITE_STORE_DRIVER=postgres` and shared backend DSN.
+3. Add `verify:s022:runtime` as the Postgres runtime scenario entrypoint (skip with explicit marker when DSN is absent).
+4. Keep `verify:gate` phase-16 on the deterministic fail-fast check; collect separate runtime evidence for closure.
 
 ## Deliverables
 
 1. Adapter interface and backend selection wiring.
 2. PostgreSQL transactional implementation (first-class path).
-3. New verification script + gate phase.
-4. BLACKBOARD and signal state updates for closure.
+3. Driver-selection verification + phase-16 gate marker.
+4. Runtime verification harness for real shared Postgres DSN execution.
+5. BLACKBOARD and signal state updates for closure.
 
 ## Non-goals
 

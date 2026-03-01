@@ -23,6 +23,7 @@
     "verify:s020": "node scripts/verify-s020-isolated-storage-boundary.mjs",
     "verify:s021": "node scripts/verify-s021-external-invite-store.mjs",
     "verify:s022": "node scripts/verify-s022-driver-selection.mjs",
+    "verify:s022:runtime": "node scripts/verify-s022-postgres-runtime.mjs",
     "verify:gate": "node scripts/verify-quality-gate.mjs"
   },
   "devDependencies": {
