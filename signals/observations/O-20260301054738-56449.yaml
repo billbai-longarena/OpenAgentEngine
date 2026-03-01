@@ -1,0 +1,12 @@
+id: O-20260301054738-56449
+pattern: "S-018 invite baseline closed with quality gate pass"
+context: "phase-13 invite flow"
+reporter: "termite:2026-03-01:worker"
+confidence: high
+created: 2026-03-01
+source: autonomous
+detail: |
+  Implemented gateway invite create/read/redeem APIs and persisted invite state under world metadata.
+  Added verify-s018-invite-flow.mjs, wired verify:s018 in package.json, and extended verify:gate with phase-11-invite-flow.
+  Final validation passed via pnpm run verify:gate, including marker:
+  S-018 invite flow verified: parent_replay=2 moment_tick=2 invite=... redeemed_world=... remaining=0 inherited=1 fork_replay=1

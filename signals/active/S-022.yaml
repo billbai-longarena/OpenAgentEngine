@@ -1,0 +1,14 @@
+id: S-022
+type: HOLE
+title: "Implement non-filesystem external invite store adapter (transactional backend)"
+status: done
+weight: 30
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-worker-s022-runtime
+module: "apps/gateway"
+tags: [phase-15,invite,consistency,datastore,postgres,redis]
+next: "Closed 2026-03-01: local real Postgres DSN runtime proof succeeded via verify:s022:runtime (shared backend produced redeem statuses [201,409]); keep CI workflow_dispatch require_s022_postgres_runtime=true for reproducible evidence."
+touch_count: 9
+source: emergent

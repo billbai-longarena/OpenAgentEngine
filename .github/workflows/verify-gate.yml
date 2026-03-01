@@ -12,6 +12,11 @@ on:
         required: false
         default: false
         type: boolean
+      require_s022_postgres_runtime:
+        description: "Force S-022 Postgres runtime verification (requires secret S022_POSTGRES_URL)"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -61,3 +66,10 @@ jobs:
           S015_REQUIRE_LIVE_BRANCH_PROTECTION: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.event.inputs.require_live_branch_protection_audit == 'true') }}
           S015_REPO: ${{ github.repository }}
           BRANCH_PROTECTION_AUDIT_TOKEN: ${{ secrets.BRANCH_PROTECTION_AUDIT_TOKEN }}
+
+      - name: Verify S-022 Postgres runtime (optional)
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.require_s022_postgres_runtime == 'true' }}
+        run: pnpm run verify:s022:runtime
+        env:
+          S022_REQUIRE_RUNTIME: 1
+          S022_POSTGRES_URL: ${{ secrets.S022_POSTGRES_URL }}

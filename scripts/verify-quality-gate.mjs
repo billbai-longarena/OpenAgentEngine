@@ -8,6 +8,16 @@ const steps = [
     successMarker: 'Workspace verification passed.'
   },
   {
+    name: 'phase-founding-vision-precedence',
+    command: ['node', 'scripts/verify-s002-founding-precedence.mjs'],
+    successMarker: 'S-002 founding vision precedence verified'
+  },
+  {
+    name: 'phase-worldview-anchors',
+    command: ['node', 'scripts/verify-s003-worldview-anchors.mjs'],
+    successMarker: 'S-003 worldview anchors verified'
+  },
+  {
     name: 'phase-1-ws-flow',
     command: ['node', 'scripts/verify-s005-flow.mjs'],
     successMarker: 'S-005 flow verified'
@@ -46,6 +56,31 @@ const steps = [
     name: 'phase-10-governance-drift-audit',
     command: ['node', 'scripts/verify-s015-branch-protection-drift.mjs'],
     successMarker: 'S-015 branch-protection drift verified'
+  },
+  {
+    name: 'phase-11-invite-flow',
+    command: ['node', 'scripts/verify-s018-invite-flow.mjs'],
+    successMarker: 'S-018 invite flow verified'
+  },
+  {
+    name: 'phase-12-invite-store',
+    command: ['node', 'scripts/verify-s019-invite-store.mjs'],
+    successMarker: 'S-019 invite store verified'
+  },
+  {
+    name: 'phase-14-isolated-storage-boundary',
+    command: ['node', 'scripts/verify-s020-isolated-storage-boundary.mjs'],
+    successMarker: 'S-020 isolated-storage boundary verified'
+  },
+  {
+    name: 'phase-15-external-invite-store',
+    command: ['node', 'scripts/verify-s021-external-invite-store.mjs'],
+    successMarker: 'S-021 external invite store verified'
+  },
+  {
+    name: 'phase-16-invite-store-driver-selection',
+    command: ['node', 'scripts/verify-s022-driver-selection.mjs'],
+    successMarker: 'S-022 invite store driver selection verified'
   }
 ];
 

@@ -1,0 +1,14 @@
+id: S-021
+type: HOLE
+title: "Implement external transactional invite store adapter for isolated/multi-region gateways"
+status: done
+weight: 38
+ttl_days: 14
+created: 2026-03-01
+last_touched: 2026-03-01
+owner: codex-worker-s021-adapter
+module: "apps/gateway"
+tags: [phase-14,invite,consistency,datastore,implementation]
+next: "External invite-store adapter landed via WORLD_INVITE_STORE_DIR; verify:s021 + phase-15 now enforce shared consistency semantics ([201,409]) across isolated metadata roots."
+touch_count: 2
+source: emergent

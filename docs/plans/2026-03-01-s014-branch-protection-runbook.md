@@ -104,3 +104,4 @@ Behavior:
 - If secret is missing on `push` to `main`, `verify:gate` fails by design.
 - If secret is present but permissions are insufficient, `verify:gate` fails and prints API status/body summary.
 - You can preflight this path via `workflow_dispatch` by setting input `require_live_branch_protection_audit=true`.
+- `workflow_dispatch` also supports `require_s022_postgres_runtime=true` for optional S-022 runtime verification when repository secret `S022_POSTGRES_URL` is configured.

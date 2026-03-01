@@ -10,6 +10,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "verify:workspace": "node scripts/verify-workspace.mjs",
+    "verify:s002": "node scripts/verify-s002-founding-precedence.mjs",
+    "verify:s003": "node scripts/verify-s003-worldview-anchors.mjs",
     "verify:s005": "node scripts/verify-s005-flow.mjs",
     "verify:s006": "node scripts/verify-s006-replay.mjs",
     "verify:s007": "node scripts/verify-s007-routing.mjs",
@@ -18,6 +20,12 @@
     "verify:s013": "node scripts/verify-s013-moment-fork.mjs",
     "verify:s014": "node scripts/verify-s014-governance-runbook.mjs",
     "verify:s015": "node scripts/verify-s015-branch-protection-drift.mjs",
+    "verify:s018": "node scripts/verify-s018-invite-flow.mjs",
+    "verify:s019": "node scripts/verify-s019-invite-store.mjs",
+    "verify:s020": "node scripts/verify-s020-isolated-storage-boundary.mjs",
+    "verify:s021": "node scripts/verify-s021-external-invite-store.mjs",
+    "verify:s022": "node scripts/verify-s022-driver-selection.mjs",
+    "verify:s022:runtime": "node scripts/verify-s022-postgres-runtime.mjs",
     "verify:gate": "node scripts/verify-quality-gate.mjs"
   },
   "devDependencies": {
